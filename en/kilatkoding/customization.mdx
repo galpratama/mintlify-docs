@@ -1,0 +1,116 @@
+---
+title: "Customization"
+description: "Change branding, pricing, navigation, pages, content, design presets, email, and product configuration in KilatKoding."
+mode: "wide"
+---
+
+## Start with the files that have the biggest impact
+
+| What you want to change | Main file | Impact |
+| --- | --- | --- |
+| Product name, description, base URL | `config/site.ts` | Metadata, SEO helpers, base product copy |
+| In-app navigation | `config/navigation.ts` | Header and dashboard navigation |
+| Plans, prices, and benefits | `config/subscriptions.ts` | Server-side plan catalog, billing UI, AI limits |
+| Marketing design presets | `config/marketing-designs.ts` | Available marketing visual themes |
+| Open startup metrics | `config/open-startup.ts` | `/open` page |
+| Public roadmap | `config/roadmap.ts` | `/roadmap` page |
+| Status page data | `config/status-page.ts` | `/status` page |
+| Landing page copy | `components/sections/*` | Hero, features, FAQ, pricing, CTA, testimonials, and more |
+| Global styling | `app/globals.css`, `app/marketing.css`, `tailwind.config.ts` | Color tokens, layout, and visual system |
+| Blog | `content/blog/*.mdx` | Blog content |
+| Email | `emails/*.tsx` | Welcome email and invoice email |
+| Legal pages | `app/(marketing)/privacy/page.tsx`, `app/(marketing)/terms/page.tsx` | Legal content |
+
+## Recommended customization order
+
+<Steps>
+  <Step title="Replace product identity">
+    Update `config/site.ts`, landing page copy, logos, and SEO descriptions.
+  </Step>
+  <Step title="Decide which features stay enabled">
+    Use toggles in `.env.local` to turn off modules your product does not use yet.
+  </Step>
+  <Step title="Adjust pricing and payments">
+    Update plan definitions in `config/subscriptions.ts` and make sure the selected payment provider matches your setup.
+  </Step>
+  <Step title="Review marketing pages">
+    Check `about`, `compare`, `roadmap`, `status`, `waitlist`, `contact`, and `blog`.
+  </Step>
+  <Step title="Review dashboard and admin">
+    Make sure the data, terminology, and CTA copy fit your product.
+  </Step>
+</Steps>
+
+## Most important configuration areas
+
+### Branding and SEO
+
+- `config/site.ts` controls the product name, description, and base URL.
+- Many pages use the shared `createMetadata()` helper, so base config changes affect downstream metadata.
+- `app/opengraph-image.png` and `app/twitter-image.png` are used for social previews.
+
+### Navigation and page content
+
+- `config/navigation.ts` controls the marketing and dashboard menus.
+- Marketing pages live in `app/(marketing)/`.
+- Landing page section copy lives in `components/sections/`.
+
+### Pricing and billing
+
+- `config/subscriptions.ts` is the source of truth for the plan catalog.
+- Checkout prices and line items are determined on the server from that file.
+- Users cannot choose custom payment amounts from the client.
+
+### Marketing design
+
+- `config/marketing-designs.ts` contains 12 marketing design presets.
+- `components/marketing/design-switcher.tsx` renders the preset switcher.
+- `components/marketing/design-provider.tsx` handles persistence and theme synchronization.
+
+### Live marketing content
+
+| Content | File |
+| --- | --- |
+| Open startup metrics | `config/open-startup.ts` |
+| Roadmap | `config/roadmap.ts` |
+| Status page | `config/status-page.ts` |
+| FAQ | `components/sections/faq.tsx` |
+| Testimonials | `components/sections/testimonials.tsx` |
+
+### Email and communication
+
+- `emails/welcome.tsx` is used for onboarding email.
+- `emails/invoice.tsx` is used for payment confirmation.
+- `app/api/contact/route.ts` sends contact-form email through Resend.
+
+## Things teams often forget to customize
+
+- `EMAIL_FROM`
+- `ADMIN_EMAILS`
+- legal page content
+- sample blog posts
+- open startup, roadmap, and status page data
+- plan benefits and prices
+- Indonesian text that is still specific to KilatKoding
+
+## If you want to disable features
+
+Use env toggles instead of deleting code too early. That is safer because:
+
+- the UI shows a clear fallback state,
+- the health check can still report readiness correctly,
+- you can enable the feature again later without restoring many files.
+
+## Pre-launch customization checklist
+
+1. Product name and descriptions match your final brand.
+2. Navigation only shows pages you actually use.
+3. Plan pricing and benefits are correct.
+4. Email sender and contact-form destination are correct.
+5. Legal, roadmap, status, and open startup copy has been reviewed.
+6. Sample blog posts are replaced or removed.
+7. Logo and social preview images match your brand.
+
+<Tip>
+If you want more task-based guidance, continue to [Rebranding recipes](/en/kilatkoding/rebranding-recipes). If you want help deciding what can realistically be handled without coding and what should go to a developer, read [No-code vs developer](/en/kilatkoding/no-code-vs-developer).
+</Tip>

@@ -5,7 +5,7 @@ This repository contains the public documentation portal for BelajarKoding, buil
 Current scope:
 
 - portal landing page for BelajarKoding docs
-- dedicated product documentation for KilatKoding
+- dedicated product documentation for KilatKoding in Indonesian and English
 
 ## Local development
 
@@ -41,7 +41,9 @@ npx mint update
 ## Documentation structure
 
 - `index.mdx` is the BelajarKoding docs portal page
-- `kilatkoding/` contains the KilatKoding product docs
+- `en/index.mdx` is the English portal page
+- `kilatkoding/` contains the Indonesian KilatKoding docs
+- `en/kilatkoding/` contains the English KilatKoding docs
 - `docs.json` controls site navigation and global Mintlify settings
 
 ## Source of truth for KilatKoding docs

@@ -1,0 +1,110 @@
+---
+title: "Resep rebranding"
+description: "Ikuti resep task-based untuk mengubah KilatKoding menjadi brand baru, portal client, atau produk yang lebih sempit fiturnya."
+mode: "wide"
+---
+
+<Info>
+Halaman ini bukan daftar file semata. Tujuannya adalah memberi urutan kerja yang lebih praktis berdasarkan hasil akhir yang kamu mau.
+</Info>
+
+## Pilihan resep
+
+| Tujuan | Mulai dari file ini | Biasanya juga perlu cek |
+| --- | --- | --- |
+| Ganti nama dan identitas produk | `config/site.ts` | logo, metadata image, copy landing page |
+| Ganti pricing dan paket | `config/subscriptions.ts` | billing page, pricing section, AI limit |
+| Hilangkan waitlist atau contact | `.env`, `config/navigation.ts` | CTA landing page, menu publik |
+| Jadikan portal member atau client | `config/navigation.ts` | dashboard section, settings, role model |
+| Rapikan halaman marketing | `components/sections/*` | `about`, `compare`, `roadmap`, `status`, `blog` |
+| White-label untuk klien | semua config inti + legal page | env production, sender email, domain klien |
+
+## Resep per tujuan
+
+<AccordionGroup>
+  <Accordion title="Resep 1: Ganti identitas produk sepenuhnya">
+    Urutan yang disarankan:
+
+    1. Ubah `config/site.ts`.
+    2. Ganti logo, opengraph image, dan twitter image.
+    3. Ganti headline, subheadline, CTA, dan FAQ di `components/sections/*`.
+    4. Review halaman `about`, `contact`, `privacy`, dan `terms`.
+    5. Pastikan metadata di halaman penting tidak lagi menyebut KilatKoding.
+
+    Cek akhir:
+
+    - nama produk konsisten di landing page, dashboard, email, dan metadata,
+    - URL live dan sender email sesuai brand baru.
+  </Accordion>
+  <Accordion title="Resep 2: Ubah boilerplate ini jadi SaaS berlangganan yang lebih sempit">
+    Cocok kalau kamu tidak butuh semua halaman marketing bawaan.
+
+    Lakukan:
+
+    1. Pilih fitur aktif lewat toggle.
+    2. Edit `config/navigation.ts` agar hanya halaman yang dipakai yang tampil.
+    3. Hapus atau ganti copy halaman yang terlalu generik seperti `compare`, `open`, atau `roadmap`.
+    4. Sesuaikan `config/subscriptions.ts` dengan plan produkmu.
+    5. Uji billing flow end-to-end.
+
+    Hasil yang diinginkan:
+
+    - user tidak melihat jalur yang tidak relevan,
+    - pricing dan benefit terasa seperti produkmu sendiri.
+  </Accordion>
+  <Accordion title="Resep 3: Ubah jadi portal member atau client area">
+    Fokus utamanya:
+
+    - auth tetap aktif,
+    - payments opsional,
+    - navigasi dashboard disederhanakan,
+    - landing page tidak lagi terlalu menjual subscription kalau akses tidak dibeli publik.
+
+    Langkah umum:
+
+    1. Nonaktifkan payments jika tidak dibutuhkan.
+    2. Sederhanakan section marketing.
+    3. Ubah dashboard menjadi area kerja, member portal, atau client hub.
+    4. Tambahkan field profile atau data domain produk kalau diperlukan developer.
+  </Accordion>
+  <Accordion title="Resep 4: Matikan modul yang tidak dipakai tanpa merusak repo">
+    Pendekatan aman:
+
+    1. Matikan modul lewat `NEXT_PUBLIC_ENABLE_*`.
+    2. Jalankan `npm run env:check`.
+    3. Hapus atau sesuaikan link navigasi.
+    4. Ubah CTA dan copy yang masih menyebut fitur itu.
+    5. Test ulang halaman yang terpengaruh.
+
+    Jangan mulai dari menghapus file, kecuali kamu memang sudah yakin modifikasi repo akan permanen.
+  </Accordion>
+  <Accordion title="Resep 5: White-label untuk klien agency">
+    Checklist utamanya:
+
+    - semua copy dan asset brand diganti,
+    - sender email dan inbox contact milik klien,
+    - domain production milik klien,
+    - callback auth dan webhook provider memakai domain klien,
+    - legal page dan pricing sesuai kesepakatan klien,
+    - data roadmap, status, dan open startup tidak tertinggal dari template lama.
+
+    Area yang paling sering terlewat:
+
+    - `EMAIL_FROM`,
+    - `ADMIN_EMAILS`,
+    - blog post contoh,
+    - metadata preview image,
+    - halaman legal.
+  </Accordion>
+</AccordionGroup>
+
+## Rules of thumb saat rebrand
+
+- mulai dari config dan copy, bukan dari refactor file besar,
+- matikan fitur dulu sebelum menghapusnya,
+- pastikan pricing, email, legal, dan navigasi ikut berubah, bukan hanya hero section,
+- cek ulang area internal seperti dashboard dan admin, bukan cuma halaman publik.
+
+<Tip>
+Kalau kamu butuh pembagian kerja yang lebih jelas antara owner produk dan developer saat rebrand, baca [Tanpa coding vs perlu developer](/kilatkoding/no-code-vs-developer).
+</Tip>

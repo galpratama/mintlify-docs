@@ -1,0 +1,120 @@
+---
+title: "Feature toggle matrix"
+description: "See the impact of each NEXT_PUBLIC_ENABLE_* toggle on UI, routes, APIs, env requirements, and fallback behavior."
+mode: "wide"
+---
+
+<Warning>
+If a toggle is not set, the repository treats that feature as enabled. Values such as `false`, `0`, `no`, or `off` are treated as disabled.
+</Warning>
+
+## Quick matrix
+
+| Toggle | Main product surface affected | If turned off | What you still need to check |
+| --- | --- | --- | --- |
+| `NEXT_PUBLIC_ENABLE_AUTH` | Login flows, auth callback, login-aware routes, avatar upload | Auth is treated as intentionally unused | Remove CTA to login and dashboard, and update landing page messaging |
+| `NEXT_PUBLIC_ENABLE_WAITLIST` | `/waitlist`, `POST /api/waitlist` | Waitlist page and API move into disabled or fallback mode | Remove waitlist links and CTA from navigation |
+| `NEXT_PUBLIC_ENABLE_CONTACT` | `/contact`, `POST /api/contact` | Contact form moves into disabled or fallback mode | Make sure users still have another support path |
+| `NEXT_PUBLIC_ENABLE_PAYMENTS` | Billing, checkout, `POST /api/payments`, `POST /api/subscription` | Billing and payment flows are treated as intentionally off | Remove upgrade CTA, checkout hooks, and subscription promises |
+| `NEXT_PUBLIC_ENABLE_ADMIN` | `/admin`, `POST /api/admin/users/role` | Admin panel is treated as intentionally unused | Make sure the team has another operations path if admin is off |
+| `NEXT_PUBLIC_ENABLE_AI` | AI readiness and whatever AI UI you expose | AI is treated as unused | Hide AI entry points and align plan copy |
+
+## Toggle-by-toggle detail
+
+<AccordionGroup>
+  <Accordion title="NEXT_PUBLIC_ENABLE_AUTH">
+    The biggest effects:
+
+    - `/auth/confirm` redirects into an error flow if auth is not considered available,
+    - `POST /api/profile/avatar` also checks auth availability,
+    - dashboard areas and other session-based routes should be treated as off at the product level.
+
+    In practice:
+
+    - do not send users into login or dashboard if auth is off,
+    - if your product is only a waitlist or marketing site, auth off is a valid setup.
+  </Accordion>
+  <Accordion title="NEXT_PUBLIC_ENABLE_WAITLIST">
+    The biggest effects:
+
+    - `/waitlist` shows a disabled or not-configured notice,
+    - `POST /api/waitlist` returns `503` when the feature is off,
+    - the health check treats waitlist as intentionally off or not ready.
+
+    Good reason to turn it off:
+
+    - the product is already fully launched,
+    - you do not want lead collection outside signup.
+  </Accordion>
+  <Accordion title="NEXT_PUBLIC_ENABLE_CONTACT">
+    The biggest effects:
+
+    - `/contact` still exists, but the form shows a notice if the feature is not ready,
+    - `POST /api/contact` returns `503` when the feature is off,
+    - contact-form rate limiting becomes irrelevant if the feature is disabled.
+
+    Good reason to turn it off:
+
+    - support is handled through direct email, Discord, WhatsApp, or an external helpdesk.
+  </Accordion>
+  <Accordion title="NEXT_PUBLIC_ENABLE_PAYMENTS">
+    The biggest effects:
+
+    - `/dashboard/billing` shows a disabled or fallback state,
+    - payment buttons are no longer usable,
+    - `POST /api/payments` and `POST /api/subscription` are treated as inactive,
+    - the health check marks billing and payments as intentionally off.
+
+    Good reason to turn it off:
+
+    - the product is not sold publicly yet,
+    - access is granted manually,
+    - you are still in waitlist or pilot mode.
+  </Accordion>
+  <Accordion title="NEXT_PUBLIC_ENABLE_ADMIN">
+    The biggest effects:
+
+    - `/admin` shows a feature notice,
+    - `POST /api/admin/users/role` is no longer available for daily operations,
+    - the team loses the built-in view for payments, webhooks, and audit logs.
+
+    Good reason to turn it off:
+
+    - you do not need an internal panel yet,
+    - operations are still handled manually through provider dashboards and database tools.
+  </Accordion>
+  <Accordion title="NEXT_PUBLIC_ENABLE_AI">
+    The most important nuance:
+
+    - this toggle is part of product readiness planning and should also control the AI surface you expose to users,
+    - the AI routes themselves still also depend on user auth, provider keys, usage limits, and rate limits,
+    - if you build your own AI UI, you still need to hide it when this toggle is off.
+
+    In practice:
+
+    - use this toggle as a product decision,
+    - use provider env and auth checks as runtime enforcement.
+  </Accordion>
+</AccordionGroup>
+
+## Gates that are not toggles, but matter just as much
+
+| Capability | What enables it | What breaks if it is not ready |
+| --- | --- | --- |
+| Auth readiness | `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | login, signup, Supabase-backed waitlist, and many auth-aware routes will fallback |
+| Billing server writes | `SUPABASE_SERVICE_ROLE_KEY` | cancel, resume, admin reporting, audit, avatar signed URLs, and payment writes are not ready |
+| Contact sending | `RESEND_API_KEY` | the form may exist, but email cannot really be sent |
+| Payment provider | Midtrans or Doku credentials matching `PAYMENT_PROVIDER` | end-to-end checkout cannot work |
+| AI runtime | provider key + auth + usage limit | AI routes return `401`, `429`, or `503` depending on the issue |
+
+## The safest way to change a toggle
+
+1. Change the toggle in `.env.local` or the production env.
+2. Run `npm run env:check`.
+3. Check `GET /api/health`.
+4. Open the page most affected by the change.
+5. Make sure navigation and CTA also change with it.
+
+<Tip>
+If you are still choosing a realistic feature combination, read [Getting started](/en/kilatkoding/getting-started) and [Launch checklists by use case](/en/kilatkoding/launch-checklists).
+</Tip>

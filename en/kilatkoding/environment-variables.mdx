@@ -1,0 +1,175 @@
+---
+title: "Environment variables"
+description: "Full reference for KilatKoding environment variables, including feature toggles and optional env values that are not listed in `.env.example`."
+mode: "wide"
+---
+
+<Warning>
+Variables with the `NEXT_PUBLIC_` prefix are exposed to the browser. Do not place server-only secrets behind that prefix.
+</Warning>
+
+## Core app and Supabase
+
+| Variable | Used when | Required? | Notes |
+| --- | --- | --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | Auth or app data is active | Yes, for auth/data | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | Auth or app data is active | Yes, for auth/data | Supabase publishable or anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Billing, admin, avatar, webhook, audit, persistent rate limits | Yes, for server-only features | Never expose this to the client |
+| `NEXT_PUBLIC_APP_URL` | Recommended in all environments | Strongly recommended | App base URL for callbacks, order pages, and metadata |
+
+## Feature toggles
+
+If a toggle is not set, the repository treats that feature as enabled. Set `false`, `0`, `no`, or `off` to disable it.
+
+| Variable | Purpose |
+| --- | --- |
+| `NEXT_PUBLIC_ENABLE_AUTH` | Controls login, signup, dashboard, settings, and auth-aware shell |
+| `NEXT_PUBLIC_ENABLE_WAITLIST` | Controls the waitlist page and API |
+| `NEXT_PUBLIC_ENABLE_CONTACT` | Controls the contact form |
+| `NEXT_PUBLIC_ENABLE_PAYMENTS` | Controls billing, checkout, and payment-related UI |
+| `NEXT_PUBLIC_ENABLE_ADMIN` | Controls the admin dashboard |
+| `NEXT_PUBLIC_ENABLE_AI` | Controls AI routes and related UI |
+
+## Payments
+
+| Variable | Required when | Notes |
+| --- | --- | --- |
+| `PAYMENT_PROVIDER` | Payments are enabled | Valid values: `midtrans` or `doku` |
+| `MIDTRANS_SERVER_KEY` | `PAYMENT_PROVIDER=midtrans` | Server-only Midtrans secret |
+| `NEXT_PUBLIC_MIDTRANS_CLIENT_KEY` | `PAYMENT_PROVIDER=midtrans` | Client key used to open the Snap popup |
+| `DOKU_CLIENT_ID` | `PAYMENT_PROVIDER=doku` | Doku merchant client ID |
+| `DOKU_SECRET_KEY` | `PAYMENT_PROVIDER=doku` | Doku merchant secret key |
+
+## Email and contact
+
+| Variable | Required when | Notes |
+| --- | --- | --- |
+| `RESEND_API_KEY` | Contact form or email is enabled | Resend API key |
+| `EMAIL_FROM` | Recommended when email is enabled | Sender address. If empty, the repo falls back to the default KilatKoding sender |
+| `CONTACT_EMAIL` | Optional | Destination inbox for the contact form. If empty, it falls back to `EMAIL_FROM` |
+
+## Admin and access control
+
+| Variable | Required when | Notes |
+| --- | --- | --- |
+| `ADMIN_EMAILS` | Optional | Comma-separated bootstrap admin email list |
+
+`ADMIN_EMAILS` is not the final source of truth. After the user signs in, the repository manages real access through the `user_roles` table.
+
+## AI
+
+| Variable | Required when | Notes |
+| --- | --- | --- |
+| `AI_DEFAULT_PROVIDER` | AI is enabled | Valid values: `openai` or `anthropic` |
+| `OPENAI_API_KEY` | `AI_DEFAULT_PROVIDER=openai` | Secret used by OpenAI AI routes |
+| `ANTHROPIC_API_KEY` | `AI_DEFAULT_PROVIDER=anthropic` | Secret used by Anthropic AI routes |
+
+## Optional env for operations
+
+| Variable | Used by | Notes |
+| --- | --- | --- |
+| `VERCEL_URL` | Metadata base URL during deploy | Usually filled automatically by Vercel |
+| `PLAYWRIGHT_BASE_URL` | Playwright | Lets E2E tests target an already running server |
+| `CI` | GitHub Actions or another CI environment | Changes Playwright retries and reporter behavior |
+
+## Common toggle profiles
+
+This section helps when you want to start from a realistic feature combination instead of keeping everything enabled at once.
+
+<AccordionGroup>
+  <Accordion title="Waitlist first, app later">
+    Good when you are still validating demand.
+
+    ```env
+    NEXT_PUBLIC_ENABLE_AUTH=false
+    NEXT_PUBLIC_ENABLE_WAITLIST=true
+    NEXT_PUBLIC_ENABLE_CONTACT=true
+    NEXT_PUBLIC_ENABLE_PAYMENTS=false
+    NEXT_PUBLIC_ENABLE_ADMIN=false
+    NEXT_PUBLIC_ENABLE_AI=false
+    ```
+
+    You still need `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` because waitlist depends on Supabase. If contact is enabled, you also need `RESEND_API_KEY`.
+  </Accordion>
+  <Accordion title="Subscription SaaS without AI">
+    Good for most classic SaaS products.
+
+    ```env
+    NEXT_PUBLIC_ENABLE_AUTH=true
+    NEXT_PUBLIC_ENABLE_WAITLIST=false
+    NEXT_PUBLIC_ENABLE_CONTACT=true
+    NEXT_PUBLIC_ENABLE_PAYMENTS=true
+    NEXT_PUBLIC_ENABLE_ADMIN=true
+    NEXT_PUBLIC_ENABLE_AI=false
+
+    PAYMENT_PROVIDER=doku
+    ```
+
+    Make sure Supabase public env, `SUPABASE_SERVICE_ROLE_KEY`, and the chosen payment provider credentials are filled in.
+  </Accordion>
+  <Accordion title="AI SaaS with paid plans">
+    Good when AI is a core product feature.
+
+    ```env
+    NEXT_PUBLIC_ENABLE_AUTH=true
+    NEXT_PUBLIC_ENABLE_WAITLIST=false
+    NEXT_PUBLIC_ENABLE_CONTACT=false
+    NEXT_PUBLIC_ENABLE_PAYMENTS=true
+    NEXT_PUBLIC_ENABLE_ADMIN=true
+    NEXT_PUBLIC_ENABLE_AI=true
+
+    PAYMENT_PROVIDER=midtrans
+    AI_DEFAULT_PROVIDER=openai
+    ```
+
+    In addition to payment env, you also need `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` depending on the default provider.
+  </Accordion>
+  <Accordion title="Member portal or client portal without public billing">
+    Good for gated product areas, internal dashboards, or client workspaces.
+
+    ```env
+    NEXT_PUBLIC_ENABLE_AUTH=true
+    NEXT_PUBLIC_ENABLE_WAITLIST=false
+    NEXT_PUBLIC_ENABLE_CONTACT=false
+    NEXT_PUBLIC_ENABLE_PAYMENTS=false
+    NEXT_PUBLIC_ENABLE_ADMIN=false
+    NEXT_PUBLIC_ENABLE_AI=false
+    ```
+
+    The minimum setup is just Supabase. You can enable admin later if you need an internal operations panel.
+  </Accordion>
+</AccordionGroup>
+
+## Minimal `.env.local` example
+
+Use this if you only want auth, dashboard, and one payment provider:
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+NEXT_PUBLIC_ENABLE_AUTH=true
+NEXT_PUBLIC_ENABLE_WAITLIST=false
+NEXT_PUBLIC_ENABLE_CONTACT=false
+NEXT_PUBLIC_ENABLE_PAYMENTS=true
+NEXT_PUBLIC_ENABLE_ADMIN=true
+NEXT_PUBLIC_ENABLE_AI=false
+
+PAYMENT_PROVIDER=doku
+DOKU_CLIENT_ID=
+DOKU_SECRET_KEY=
+
+ADMIN_EMAILS=you@example.com
+```
+
+## Quick way to verify env values
+
+1. Run `npm run env:check`.
+2. Read the status for each feature: `ready`, `fallback mode`, or `disabled by ...`.
+3. After the app is live, open `GET /api/health` for a more detailed readiness summary.
+
+<Tip>
+If a feature is not part of your product yet, it is better to disable it explicitly than to leave it half-configured.
+</Tip>

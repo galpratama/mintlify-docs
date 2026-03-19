@@ -1,0 +1,459 @@
+---
+title: "API reference"
+description: "Contract-style reference for KilatKoding endpoints, including public routes, logged-in user routes, admin routes, AI routes, and webhooks."
+mode: "wide"
+---
+
+<Warning>
+The payload examples on this page are simplified for readability. Some routes also add rate-limit headers such as `X-RateLimit-Limit`, `X-RateLimit-Remaining`, and `X-RateLimit-Reset`.
+</Warning>
+
+## Endpoint summary
+
+| Group | Main endpoints |
+| --- | --- |
+| Public | `POST /api/contact`, `POST /api/waitlist`, `GET /api/health` |
+| Logged-in user | `POST /api/payments`, `POST /api/subscription`, `POST /api/profile`, `POST /api/profile/avatar` |
+| Admin | `POST /api/admin/users/role` |
+| AI | `POST /api/ai/chat`, `POST /api/ai/generate` |
+| Provider callback | `POST /api/webhooks/midtrans`, `POST /api/webhooks/doku` |
+
+## Public endpoints
+
+<AccordionGroup>
+  <Accordion title="POST /api/contact">
+    | Property | Value |
+    | --- | --- |
+    | Auth | No login required |
+    | Feature gate | Contact feature must be active |
+    | Rate limit | 5 requests per hour per IP |
+    | Purpose | Send a contact-form message through Resend |
+
+    Request body:
+
+    ```json
+    {
+      "name": "Galang",
+      "email": "galang@example.com",
+      "message": "Hi, I want a demo."
+    }
+    ```
+
+    Success response:
+
+    ```json
+    {
+      "success": true
+    }
+    ```
+
+    Common responses:
+
+    | Status | When it happens |
+    | --- | --- |
+    | `400` | Required fields are missing or the email is invalid |
+    | `429` | Contact rate limit is exceeded |
+    | `503` | The contact feature is not active or env is incomplete |
+    | `500` | Resend fails to send the email |
+  </Accordion>
+  <Accordion title="POST /api/waitlist">
+    | Property | Value |
+    | --- | --- |
+    | Auth | No login required |
+    | Feature gate | Waitlist feature must be active |
+    | Rate limit | 5 requests per hour per IP |
+    | Purpose | Save a lead into the `waitlist` table |
+
+    Request body:
+
+    ```json
+    {
+      "email": "galang@example.com",
+      "name": "Galang"
+    }
+    ```
+
+    Success response:
+
+    ```json
+    {
+      "success": true
+    }
+    ```
+
+    Common responses:
+
+    | Status | When it happens |
+    | --- | --- |
+    | `400` | The email is invalid |
+    | `409` | The email is already registered |
+    | `429` | The waitlist rate limit is exceeded |
+    | `503` | The waitlist feature is not active or env is incomplete |
+    | `500` | Database insert fails |
+  </Accordion>
+  <Accordion title="GET /api/health">
+    | Property | Value |
+    | --- | --- |
+    | Auth | No login required |
+    | Purpose | Check feature readiness and database availability |
+
+    Core response shape:
+
+    ```json
+    {
+      "status": "ok",
+      "payment_provider": "doku",
+      "checks": {
+        "supabase_public": true,
+        "supabase_service_role": true,
+        "resend": true
+      },
+      "database": {
+        "ok": true,
+        "latency_ms": 24
+      }
+    }
+    ```
+
+    Notes:
+
+    - it returns `200` when active features are healthy,
+    - it returns `503` when an active feature is still missing required config or the database check fails,
+    - the response also includes a per-feature map with `enabled`, `missing_env`, and `disabled_by_flag`.
+  </Accordion>
+</AccordionGroup>
+
+## Logged-in user endpoints
+
+<AccordionGroup>
+  <Accordion title="POST /api/payments">
+    | Property | Value |
+    | --- | --- |
+    | Auth | Login required |
+    | Feature gate | Payments must be active and ready |
+    | Rate limit | 5 requests per 15 minutes per user |
+    | Purpose | Create a pending payment and start the provider checkout session |
+
+    Request body:
+
+    ```json
+    {
+      "plan": "PRO"
+    }
+    ```
+
+    Midtrans success response:
+
+    ```json
+    {
+      "provider": "midtrans",
+      "token": "snap-token",
+      "orderId": "KK-1742360000000-AB12CD34"
+    }
+    ```
+
+    Doku success response:
+
+    ```json
+    {
+      "provider": "doku",
+      "payment_url": "https://sandbox.doku.com/...",
+      "orderId": "KK-1742360000000-AB12CD34"
+    }
+    ```
+
+    Common responses:
+
+    | Status | When it happens |
+    | --- | --- |
+    | `400` | `plan` is invalid or unavailable |
+    | `401` | The user is not logged in |
+    | `429` | Payment rate limit is exceeded |
+    | `503` | The payments feature is not ready or the provider is not configured |
+    | `500` | The payment record cannot be created |
+  </Accordion>
+  <Accordion title="POST /api/subscription">
+    | Property | Value |
+    | --- | --- |
+    | Auth | Login required |
+    | Purpose | Cancel or resume the active subscription |
+
+    Request body:
+
+    ```json
+    {
+      "action": "cancel"
+    }
+    ```
+
+    Valid values:
+
+    - `cancel`
+    - `resume`
+
+    Success response:
+
+    ```json
+    {
+      "success": true,
+      "status": "cancel_at_period_end"
+    }
+    ```
+
+    Or:
+
+    ```json
+    {
+      "success": true,
+      "status": "active"
+    }
+    ```
+
+    Common responses:
+
+    | Status | When it happens |
+    | --- | --- |
+    | `400` | The action value is invalid |
+    | `401` | The user is not logged in |
+    | `503` | Server-side billing configuration is not ready |
+  </Accordion>
+  <Accordion title="POST /api/profile">
+    | Property | Value |
+    | --- | --- |
+    | Auth | Login required |
+    | Purpose | Save full name and avatar references for the current user |
+
+    Request body:
+
+    ```json
+    {
+      "full_name": "Galang Pratama",
+      "avatar_path": "user-id/avatar",
+      "avatar_url": "https://signed-url.example.com/avatar"
+    }
+    ```
+
+    Success response:
+
+    ```json
+    {
+      "success": true,
+      "profile": {
+        "full_name": "Galang Pratama",
+        "avatar_path": "user-id/avatar",
+        "avatar_url": "https://signed-url.example.com/avatar"
+      }
+    }
+    ```
+
+    Common responses:
+
+    | Status | When it happens |
+    | --- | --- |
+    | `400` | The profile body is invalid |
+    | `401` | The user is not logged in |
+    | `500` | The profile update fails |
+    | `503` | Server-side write configuration is not ready |
+  </Accordion>
+  <Accordion title="POST /api/profile/avatar">
+    | Property | Value |
+    | --- | --- |
+    | Auth | Login required |
+    | Feature gate | Auth must be active |
+    | Purpose | Create a signed upload URL for avatars |
+
+    Request body:
+
+    ```json
+    {
+      "fileSize": 180000,
+      "fileType": "image/png"
+    }
+    ```
+
+    Success response:
+
+    ```json
+    {
+      "bucket": "avatars",
+      "path": "user-id/avatar",
+      "token": "signed-upload-token"
+    }
+    ```
+
+    Common responses:
+
+    | Status | When it happens |
+    | --- | --- |
+    | `400` | The file is larger than 2 MB or the MIME type is unsupported |
+    | `401` | The user is not logged in |
+    | `500` | The signed upload URL cannot be created |
+    | `503` | The auth feature is not available |
+  </Accordion>
+</AccordionGroup>
+
+## Admin endpoint
+
+<AccordionGroup>
+  <Accordion title="POST /api/admin/users/role">
+    | Property | Value |
+    | --- | --- |
+    | Auth | Login required |
+    | Authorization | `admin` role required |
+    | Purpose | Change a user's role to `admin` or `member` |
+
+    Request body:
+
+    ```json
+    {
+      "user_id": "550e8400-e29b-41d4-a716-446655440000",
+      "role": "admin"
+    }
+    ```
+
+    Success response:
+
+    ```json
+    {
+      "success": true,
+      "user_id": "550e8400-e29b-41d4-a716-446655440000",
+      "role": "admin"
+    }
+    ```
+
+    Common responses:
+
+    | Status | When it happens |
+    | --- | --- |
+    | `400` | The body is invalid or an admin tries to demote their own account |
+    | `401` | The user is not logged in |
+    | `403` | The user is logged in but is not an admin |
+    | `500` | The role update fails |
+    | `503` | The admin feature is not ready server-side |
+  </Accordion>
+</AccordionGroup>
+
+## AI endpoints
+
+<AccordionGroup>
+  <Accordion title="POST /api/ai/chat">
+    | Property | Value |
+    | --- | --- |
+    | Auth | Login required |
+    | Rate limit | Based on the user's plan, per 5 minutes |
+    | Purpose | Stream AI chat responses |
+
+    Request body:
+
+    ```json
+    {
+      "provider": "openai",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Help me summarize this brief."
+        }
+      ]
+    }
+    ```
+
+    Success behavior:
+
+    - returns a UI message stream rather than a plain JSON object,
+    - usage is tracked after the stream finishes.
+
+    Common responses:
+
+    | Status | When it happens |
+    | --- | --- |
+    | `400` | `messages` is missing |
+    | `401` | The user is not logged in |
+    | `429` | Request rate limit or monthly usage limit is exceeded |
+    | `503` | The AI provider is not configured |
+  </Accordion>
+  <Accordion title="POST /api/ai/generate">
+    | Property | Value |
+    | --- | --- |
+    | Auth | Login required |
+    | Rate limit | Based on the user's plan, per 5 minutes |
+    | Purpose | Generate one-off text output |
+
+    Request body:
+
+    ```json
+    {
+      "provider": "openai",
+      "prompt": "Write a short product description",
+      "system": "Use a formal tone"
+    }
+    ```
+
+    Success response:
+
+    ```json
+    {
+      "text": "Generated output...",
+      "usage": {
+        "inputTokens": 20,
+        "outputTokens": 120
+      }
+    }
+    ```
+
+    Common responses:
+
+    | Status | When it happens |
+    | --- | --- |
+    | `400` | `prompt` is missing |
+    | `401` | The user is not logged in |
+    | `429` | Request rate limit or monthly usage limit is exceeded |
+    | `503` | The AI provider is not configured |
+  </Accordion>
+</AccordionGroup>
+
+## Provider webhook endpoints
+
+<AccordionGroup>
+  <Accordion title="POST /api/webhooks/midtrans">
+    Use this endpoint as a Midtrans callback, not as a browser-facing route.
+
+    Verified fields:
+
+    - `order_id`
+    - `status_code`
+    - `gross_amount`
+    - `signature_key`
+    - `transaction_status`
+
+    Important behavior:
+
+    - invalid signature returns `401`,
+    - invalid payload returns `400`,
+    - missing payment record returns `404`,
+    - duplicate delivery can return `{ "received": true, "duplicate": true }`,
+    - valid events update `payments`, may activate `subscriptions`, and write into `webhook_events` and `audit_logs`.
+  </Accordion>
+  <Accordion title="POST /api/webhooks/doku">
+    Use this endpoint as a Doku JOKUL callback, not as a browser-facing route.
+
+    Verified fields:
+
+    - `order.invoice_number`
+    - `order.amount`
+    - `transaction.status`
+    - `transaction.original_request_id`
+    - `security.check_word`
+
+    Important behavior:
+
+    - invalid signature returns `401`,
+    - invalid payload returns `400`,
+    - missing payment record returns `404`,
+    - duplicate delivery is traceable through `webhook_events`,
+    - valid events update `payments`, may activate `subscriptions`, and write an audit trail.
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+`/auth/confirm` is an auth callback route, not an `/api` endpoint. To understand where it fits in login, OTP, and OAuth flows, read [End-to-end flows](/en/kilatkoding/end-to-end-flows).
+</Note>

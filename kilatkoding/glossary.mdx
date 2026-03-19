@@ -1,0 +1,54 @@
+---
+title: "Glossary"
+description: "Pahami istilah teknis dan produk yang sering muncul di dokumentasi KilatKoding."
+mode: "wide"
+---
+
+## Istilah inti
+
+| Istilah | Arti sederhana |
+| --- | --- |
+| Auth | Sistem login, signup, verifikasi email, dan session user |
+| Audit log | Catatan kejadian penting seperti aksi admin, perubahan profile, dan hasil payment |
+| Boilerplate | Fondasi project yang sudah menyiapkan struktur, fitur, dan integrasi awal |
+| Callback URL | URL yang dipakai provider untuk mengembalikan user atau notifikasi ke app |
+| Contact form | Form publik yang mengirim pesan ke inbox tim |
+| Dashboard | Area setelah login untuk user akhir |
+| Environment variables | Nilai konfigurasi yang dibaca app dari `.env` atau dashboard hosting |
+| Feature toggle | Flag seperti `NEXT_PUBLIC_ENABLE_*` untuk menyalakan atau mematikan area produk |
+| Fallback mode | Kondisi saat fitur aktif secara produk, tetapi env atau service yang dibutuhkan belum siap |
+| Health check | Endpoint seperti `GET /api/health` untuk melihat kesiapan sistem |
+| Magic Link | Login tanpa password lewat link di email |
+| Metadata | Data seperti title, description, dan preview image untuk browser dan sosial |
+| Migration | File SQL yang mengubah schema database secara terstruktur |
+| Payment provider | Gateway pembayaran seperti Midtrans atau Doku |
+| Plan | Paket langganan seperti `FREE`, `BASIC`, `PRO`, atau `ULTIMATE` |
+| Rate limit | Batas jumlah request dalam jangka waktu tertentu |
+| RLS | Row Level Security, aturan siapa boleh membaca atau mengubah baris data tertentu |
+| Route | Jalur URL atau endpoint API di aplikasi |
+| Service role key | Secret Supabase server-only untuk operasi yang tidak boleh dijalankan di browser |
+| Signed upload URL | URL sementara yang dipakai browser untuk upload file dengan aman |
+| Subscription | Status langganan user, termasuk plan, periode aktif, dan cancel state |
+| Use case | Skenario nyata bagaimana KilatKoding dipakai untuk jenis produk tertentu |
+| Webhook | Callback server-to-server dari provider eksternal seperti payment gateway |
+
+## Istilah yang sering membingungkan
+
+<AccordionGroup>
+  <Accordion title="Auth vs admin">
+    Auth berarti user bisa login. Admin berarti user tertentu punya akses operasional tambahan. Semua admin butuh auth, tetapi tidak semua user login adalah admin.
+  </Accordion>
+  <Accordion title="Publishable key vs service role key">
+    Publishable key aman dipakai di browser untuk kebutuhan client. Service role key adalah secret server-only yang memberi hak lebih besar, jadi tidak boleh diekspos ke client.
+  </Accordion>
+  <Accordion title="Disabled by flag vs not configured">
+    `Disabled by flag` berarti fitur sengaja dimatikan lewat toggle. `Not configured` berarti fitur masih dianggap aktif, tetapi env atau service pendukungnya belum siap.
+  </Accordion>
+  <Accordion title="Order page vs payment webhook">
+    Order page adalah halaman yang dilihat user setelah checkout. Payment webhook adalah notifikasi server-to-server yang benar-benar menentukan apakah payment dianggap sukses dan subscription diaktifkan.
+  </Accordion>
+</AccordionGroup>
+
+<Tip>
+Kalau kamu ingin melihat bagaimana istilah-istilah ini saling terhubung dalam proses nyata, baca [Flow end-to-end](/kilatkoding/end-to-end-flows) dan [Peta database](/kilatkoding/database-map).
+</Tip>

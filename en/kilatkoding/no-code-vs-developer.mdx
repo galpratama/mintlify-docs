@@ -1,0 +1,125 @@
+---
+title: "No-code vs developer"
+description: "Separate the KilatKoding work that can be prepared without coding, what works best collaboratively, and what clearly needs a developer."
+mode: "wide"
+---
+
+<Info>
+This page is meant to help founders, operators, marketers, and developers divide work more realistically. The goal is not to restrict who can do what, but to reduce confusion and rework.
+</Info>
+
+## Quick summary
+
+| Type of work | Usually possible without coding | Usually collaborative | Usually needs a developer |
+| --- | --- | --- | --- |
+| Deciding which features stay active | Yes | Yes | Not required |
+| Preparing Supabase, Resend, Midtrans, Doku, or OpenAI accounts | Yes | Yes | Not required, but still needs developer validation |
+| Changing copy, legal pages, pricing policy, CTA, and positioning | Yes | Yes | Not required |
+| Filling production `.env` values | Yes, if you understand provider dashboards | Yes | Often still needs developer review |
+| Changing routes, dashboard behavior, database schema, webhook logic, or AI UX | No | Yes | Yes |
+| Debugging runtime incidents | No | Yes | Yes |
+
+## What you can usually handle without coding
+
+You can often handle these areas yourself or with an AI assistant, as long as there is final review:
+
+- choosing which modules should stay enabled or disabled,
+- creating third-party service accounts,
+- preparing domains, sender email, redirect URLs, and webhook URLs in provider dashboards,
+- rewriting landing page copy, FAQ, pricing copy, legal pages, and blog content,
+- deciding the business shape of plans and benefits,
+- deciding whether the product needs waitlist, contact, admin, payments, or AI,
+- running the launch checklist from an operational perspective.
+
+## What usually works best with a developer
+
+These areas are often prepared by non-technical stakeholders, but executed more safely together:
+
+- filling production environment variables,
+- testing login, payment, webhook, avatar, and AI flows,
+- deciding which pages should disappear from navigation,
+- changing marketing presets and then aligning the global styling,
+- reviewing admin data, audit logs, and health checks before launch,
+- mapping a product use case to the right toggle and service combination.
+
+## What clearly needs a developer
+
+These areas usually are not non-coding tasks:
+
+- adding new tables, changing database relationships, or writing migrations,
+- changing route handlers, webhook verification, or billing business logic,
+- adding a new provider beyond what the repo already supports,
+- changing auth flow, access control, or permission logic,
+- building new dashboard UI that does not already exist,
+- turning the AI routes into a real product experience,
+- debugging build failures, runtime errors, or broken API behavior.
+
+## Tasks by role
+
+<AccordionGroup>
+  <Accordion title="If you are a founder or product operator">
+    Your highest-leverage areas are usually:
+
+    - choosing the product use case,
+    - deciding which features stay active,
+    - preparing provider accounts,
+    - writing positioning, pricing, FAQ, legal, and marketing content,
+    - leading the launch checklist.
+
+    A developer should still step in as soon as the decision touches app flow, data, or server-side integration.
+  </Accordion>
+  <Accordion title="If you are a marketer or content owner">
+    The best-fit areas are:
+
+    - landing page copy,
+    - CTA and headline work,
+    - `about`, `compare`, `roadmap`, `status`, and `blog` content,
+    - onboarding messaging, email copy, and FAQ,
+    - checking whether the product narrative is consistent.
+
+    You usually do not need to touch database schema, server-only env values, or API routes.
+  </Accordion>
+  <Accordion title="If you are a developer">
+    Your core responsibility areas are usually:
+
+    - local setup and deployment,
+    - env validation,
+    - route, component, and schema changes,
+    - billing and webhooks,
+    - AI integration,
+    - runtime troubleshooting and observability.
+
+    To move faster, treat the business decisions from non-technical teammates as clear constraints instead of assumptions.
+  </Accordion>
+  <Accordion title="If you are using an AI coding assistant">
+    AI coding assistants are most useful for:
+
+    - changing copy and simple layouts,
+    - applying a clear rebrand,
+    - making bounded UI changes,
+    - helping with smaller refactors or codebase reading.
+
+    AI coding assistants still need specific direction, test validation, and human review for payments, auth, database, and production deployment.
+  </Accordion>
+</AccordionGroup>
+
+## Signs you are already in developer-only territory
+
+Pause and involve a developer if you are about to touch:
+
+- files under `app/api/`,
+- migrations under `supabase/migrations/`,
+- new dashboard fields or new database structures,
+- a new provider integration,
+- an incident already affecting billing, admin, webhooks, or AI runtime.
+
+## The safest way to split the work
+
+1. Non-technical stakeholders decide the use case, active features, pricing, copy, and provider accounts.
+2. The developer translates those decisions into env values, routes, UI, and database behavior.
+3. Both sides test the critical flows together before launch.
+4. Production incidents are first discussed in operational language, then traced into technical detail.
+
+<Tip>
+If you are still not sure where to start, read [KilatKoding use cases](/en/kilatkoding/use-cases), then continue to [Launch checklists by use case](/en/kilatkoding/launch-checklists).
+</Tip>

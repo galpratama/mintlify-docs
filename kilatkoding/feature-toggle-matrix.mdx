@@ -1,0 +1,120 @@
+---
+title: "Feature toggle matrix"
+description: "Lihat dampak setiap NEXT_PUBLIC_ENABLE_* toggle pada UI, route, API, env, dan fallback behavior KilatKoding."
+mode: "wide"
+---
+
+<Warning>
+Kalau sebuah toggle tidak diisi, repo menganggap fitur itu aktif. Nilai `false`, `0`, `no`, atau `off` diperlakukan sebagai kondisi nonaktif.
+</Warning>
+
+## Matrix cepat
+
+| Toggle | Area utama yang terpengaruh | Jika dimatikan | Hal yang tetap perlu kamu cek |
+| --- | --- | --- | --- |
+| `NEXT_PUBLIC_ENABLE_AUTH` | Flow login, callback auth, route login-aware, upload avatar | Auth dianggap sengaja tidak dipakai | Hapus CTA ke login/dashboard dan sesuaikan narasi landing page |
+| `NEXT_PUBLIC_ENABLE_WAITLIST` | `/waitlist`, `POST /api/waitlist` | Page dan API waitlist masuk mode disabled/fallback | Hapus link waitlist dari navigasi dan CTA |
+| `NEXT_PUBLIC_ENABLE_CONTACT` | `/contact`, `POST /api/contact` | Form kontak masuk mode disabled/fallback | Pastikan ada jalur support lain kalau form dimatikan |
+| `NEXT_PUBLIC_ENABLE_PAYMENTS` | Billing, checkout, `POST /api/payments`, `POST /api/subscription` | Flow billing dan payment dianggap sengaja mati | Hapus CTA upgrade, pricing checkout, dan janji subscription |
+| `NEXT_PUBLIC_ENABLE_ADMIN` | `/admin`, `POST /api/admin/users/role` | Panel admin dianggap sengaja tidak dipakai | Pastikan tim internal punya cara lain untuk operasi jika admin off |
+| `NEXT_PUBLIC_ENABLE_AI` | Readiness AI dan UI AI yang kamu expose | AI dianggap tidak dipakai | Sembunyikan entry point AI dan sesuaikan copy plan |
+
+## Detail per toggle
+
+<AccordionGroup>
+  <Accordion title="NEXT_PUBLIC_ENABLE_AUTH">
+    Dampak yang paling terasa:
+
+    - `/auth/confirm` akan mengarahkan ke error kalau auth dianggap tidak aktif,
+    - `POST /api/profile/avatar` juga memeriksa availability auth,
+    - area dashboard dan route yang butuh session tetap harus diperlakukan sebagai area nonaktif secara produk.
+
+    Artinya secara operasional:
+
+    - jangan arahkan user ke login atau dashboard kalau auth memang dimatikan,
+    - kalau produkmu hanya waitlist atau marketing site, auth off adalah setup yang wajar.
+  </Accordion>
+  <Accordion title="NEXT_PUBLIC_ENABLE_WAITLIST">
+    Dampak yang paling terasa:
+
+    - halaman `/waitlist` akan menampilkan notice disabled atau not configured,
+    - `POST /api/waitlist` akan mengembalikan `503` kalau fiturnya tidak aktif,
+    - health check akan menganggap waitlist sengaja mati atau belum siap.
+
+    Cocok dimatikan kalau:
+
+    - kamu sudah launch penuh,
+    - kamu tidak ingin mengumpulkan lead di luar flow signup.
+  </Accordion>
+  <Accordion title="NEXT_PUBLIC_ENABLE_CONTACT">
+    Dampak yang paling terasa:
+
+    - halaman `/contact` tetap ada, tetapi form akan masuk mode notice jika fitur belum siap,
+    - `POST /api/contact` akan mengembalikan `503` kalau fitur tidak aktif,
+    - rate limit form kontak tidak relevan lagi kalau fitur dimatikan.
+
+    Cocok dimatikan kalau:
+
+    - support dipindahkan ke email langsung, Discord, WhatsApp, atau helpdesk eksternal.
+  </Accordion>
+  <Accordion title="NEXT_PUBLIC_ENABLE_PAYMENTS">
+    Dampak yang paling terasa:
+
+    - `/dashboard/billing` akan menampilkan state disabled atau fallback,
+    - tombol payment di billing tidak lagi usable,
+    - `POST /api/payments` dan `POST /api/subscription` dianggap tidak aktif,
+    - health check akan menandai billing dan payments sebagai fitur yang tidak dipakai.
+
+    Cocok dimatikan kalau:
+
+    - produk belum dijual publik,
+    - akses diberikan manual,
+    - kamu masih fase waitlist atau pilot private.
+  </Accordion>
+  <Accordion title="NEXT_PUBLIC_ENABLE_ADMIN">
+    Dampak yang paling terasa:
+
+    - `/admin` menampilkan feature notice,
+    - `POST /api/admin/users/role` dianggap tidak tersedia untuk operasional harian,
+    - tim kehilangan panel visual untuk payment, webhook, dan audit trail.
+
+    Cocok dimatikan kalau:
+
+    - kamu belum butuh panel internal,
+    - semua operasi masih dilakukan manual dari dashboard provider dan database.
+  </Accordion>
+  <Accordion title="NEXT_PUBLIC_ENABLE_AI">
+    Dampak yang paling penting untuk dipahami:
+
+    - toggle ini dipakai untuk readiness planning dan seharusnya juga mengendalikan surface AI yang kamu tampilkan ke user,
+    - route AI saat ini tetap sangat bergantung pada auth user, provider key, usage limit, dan rate limit,
+    - kalau kamu membangun UI AI sendiri, kamu tetap perlu menyembunyikannya saat toggle ini dimatikan.
+
+    Praktiknya:
+
+    - gunakan toggle ini sebagai keputusan produk,
+    - gunakan provider env dan auth check sebagai keputusan runtime.
+  </Accordion>
+</AccordionGroup>
+
+## Gate yang bukan toggle, tetapi sama pentingnya
+
+| Capability | Apa yang mengaktifkan | Dampaknya kalau belum siap |
+| --- | --- | --- |
+| Auth readiness | `NEXT_PUBLIC_SUPABASE_URL` + `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | login, signup, waitlist berbasis Supabase, dan banyak route auth-aware akan fallback |
+| Billing server writes | `SUPABASE_SERVICE_ROLE_KEY` | cancel, resume, admin reporting, audit, avatar signed URL, dan payment write tidak siap |
+| Contact form send | `RESEND_API_KEY` | form kontak terlihat aktif, tetapi tidak bisa benar-benar kirim email |
+| Payment provider | credential Midtrans atau Doku sesuai `PAYMENT_PROVIDER` | checkout end-to-end tidak bisa jalan |
+| AI runtime | provider key + auth + usage limit | route AI mengembalikan `401`, `429`, atau `503` sesuai masalahnya |
+
+## Cara mengubah toggle dengan aman
+
+1. Ubah toggle di `.env.local` atau env production.
+2. Jalankan `npm run env:check`.
+3. Cek `GET /api/health`.
+4. Buka halaman yang paling terpengaruh.
+5. Pastikan navigasi dan CTA ikut disesuaikan.
+
+<Tip>
+Kalau kamu sedang memilih kombinasi toggle yang realistis, baca [Mulai dengan benar](/kilatkoding/getting-started) dan [Checklist launch per use case](/kilatkoding/launch-checklists).
+</Tip>

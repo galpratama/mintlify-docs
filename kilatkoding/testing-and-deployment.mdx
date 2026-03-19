@@ -77,7 +77,7 @@ Workflow build dan E2E memakai placeholder env untuk service yang tidak selalu a
 
 ## Deployment target
 
-Repo ini paling natural untuk Vercel karena memakai Next.js App Router, tetapi tidak terkunci ke Vercel. Apa pun platformnya, Anda tetap perlu:
+Repo ini paling natural untuk Vercel karena memakai Next.js App Router, tetapi tidak terkunci ke Vercel. Apa pun platformnya, kamu tetap perlu:
 
 - env yang benar,
 - domain yang benar,
@@ -96,5 +96,9 @@ Sesudah deploy, cek minimal:
 - `GET /api/health`.
 
 <Tip>
-Kalau Anda menyalakan hanya sebagian fitur, test dan health check Anda juga harus fokus ke fitur yang memang aktif. Jangan mengejar status sempurna untuk fitur yang sengaja dimatikan.
+Kalau kamu menyalakan hanya sebagian fitur, test dan health check kamu juga harus fokus ke fitur yang memang aktif. Jangan mengejar status sempurna untuk fitur yang sengaja dimatikan.
 </Tip>
+
+<Note>
+Kalau kamu ingin resep test manual per fitur, baca [Resep testing](/kilatkoding/testing-recipes). Kalau target deploy utama kamu adalah Vercel, lanjutkan ke [Deployment Vercel](/kilatkoding/vercel-deployment).
+</Note>

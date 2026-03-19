@@ -1,16 +1,25 @@
 ---
 title: "Setup layanan"
-description: "Hubungkan KilatKoding ke Supabase, Resend, Midtrans, Doku, dan provider AI sesuai kebutuhan produk Anda."
+description: "Hubungkan KilatKoding ke Supabase, Resend, Midtrans, Doku, dan provider AI sesuai kebutuhan produk kamu."
 mode: "wide"
 ---
 
 ## Prinsip dasar
 
-Anda tidak harus menyalakan semua layanan. KilatKoding mendukung setup bertahap. Jika satu fitur belum siap, Anda bisa mematikannya lewat toggle env.
+Kamu tidak harus menyalakan semua layanan. KilatKoding mendukung setup bertahap. Kalau satu fitur belum siap, kamu bisa mematikannya lewat toggle env.
+
+## Kombinasi layanan yang umum
+
+| Target produk | Layanan minimum | Layanan yang bisa ditambahkan belakangan | Catatan |
+| --- | --- | --- | --- |
+| Waitlist atau pre-launch MVP | Supabase | Resend | Cocok kalau kamu baru ingin mengumpulkan lead dan validasi demand |
+| SaaS berlangganan | Supabase + Midtrans atau Doku | Resend, AI provider | Jalur paling natural untuk KilatKoding |
+| SaaS dengan fitur AI | Supabase + OpenAI atau Anthropic | Midtrans atau Doku, Resend | Payment provider dibutuhkan kalau AI akan dimonetisasi lewat plan |
+| Portal member atau client | Supabase | Resend, payment provider | Billing bisa ditunda kalau akses produk belum dijual publik |
 
 ## 1. Supabase
 
-Supabase adalah fondasi utama untuk auth dan database. Jika Anda ingin memakai login, dashboard, billing, admin, waitlist, avatar, atau audit log, mulai dari sini.
+Supabase adalah fondasi utama untuk auth dan database. Kalau kamu ingin memakai login, dashboard, billing, admin, waitlist, avatar, atau audit log, mulai dari sini.
 
 ### Langkah setup
 
@@ -30,17 +39,17 @@ http://localhost:3000/auth/confirm
 http://localhost:3000/auth/update-password
 ```
 
-Untuk production, ganti domain lokal dengan domain live Anda.
+Untuk production, ganti domain lokal dengan domain live kamu.
 
-### Kalau Anda ingin Google OAuth
+### Kalau kamu ingin Google OAuth
 
 1. Aktifkan provider Google di dashboard Supabase.
 2. Masukkan Google Client ID dan Secret.
-3. Tambahkan callback URL dari Supabase ke pengaturan OAuth app Anda di Google Cloud.
+3. Tambahkan callback URL dari Supabase ke pengaturan OAuth app kamu di Google Cloud.
 
 ## 2. Resend
 
-Gunakan Resend jika Anda ingin mengirim email dari form kontak atau email transaksional.
+Gunakan Resend jika kamu ingin mengirim email dari form kontak atau email transaksional.
 
 ### Yang perlu diisi
 
@@ -57,7 +66,7 @@ Gunakan Resend jika Anda ingin mengirim email dari form kontak atau email transa
 
 ## 3. Midtrans
 
-Gunakan Midtrans jika Anda ingin checkout lewat Snap.
+Gunakan Midtrans jika kamu ingin checkout lewat Snap.
 
 ### Yang perlu diisi
 
@@ -72,14 +81,14 @@ Gunakan Midtrans jika Anda ingin checkout lewat Snap.
 3. Daftarkan webhook:
 
 ```text
-https://domain-anda.com/api/webhooks/midtrans
+https://domain-kamu.com/api/webhooks/midtrans
 ```
 
-4. Pastikan return URL user mengarah ke halaman order Anda. KilatKoding memakai `/order/[id]` dan punya fallback di `/payment/callback`.
+4. Pastikan return URL user mengarah ke halaman order kamu. KilatKoding memakai `/order/[id]` dan punya fallback di `/payment/callback`.
 
 ## 4. Doku
 
-Gunakan Doku jika Anda ingin checkout lewat JOKUL.
+Gunakan Doku jika kamu ingin checkout lewat JOKUL.
 
 ### Yang perlu diisi
 
@@ -94,12 +103,19 @@ Gunakan Doku jika Anda ingin checkout lewat JOKUL.
 3. Daftarkan webhook:
 
 ```text
-https://domain-anda.com/api/webhooks/doku
+https://domain-kamu.com/api/webhooks/doku
 ```
+
+## Midtrans vs Doku
+
+| Provider | Bentuk checkout di repo saat ini | Env utama | Biasanya cocok kalau |
+| --- | --- | --- | --- |
+| Midtrans | Snap token untuk flow checkout Midtrans | `MIDTRANS_SERVER_KEY`, `NEXT_PUBLIC_MIDTRANS_CLIENT_KEY` | Kamu ingin memakai flow Snap yang umum dipakai produk digital di Indonesia |
+| Doku | Checkout URL JOKUL yang diarahkan dari server | `DOKU_CLIENT_ID`, `DOKU_SECRET_KEY` | Kamu ingin flow checkout berbasis redirect yang tetap terverifikasi lewat webhook |
 
 ## 5. AI provider
 
-AI bersifat opsional. Kalau Anda tidak butuh AI, set `NEXT_PUBLIC_ENABLE_AI=false`.
+AI bersifat opsional. Kalau kamu tidak butuh AI, set `NEXT_PUBLIC_ENABLE_AI=false`.
 
 ### Pilihan provider
 
@@ -133,5 +149,5 @@ Snapshot ini berasal dari kode repo per 19 Maret 2026.
 4. AI provider
 
 <Tip>
-Kalau Anda ingin launch cepat, aktifkan dulu Supabase dan satu payment provider. Resend dan AI bisa ditambahkan sesudah alur utama berjalan.
+Kalau kamu ingin launch cepat, aktifkan dulu Supabase dan satu payment provider. Resend dan AI bisa ditambahkan sesudah alur utama berjalan.
 </Tip>

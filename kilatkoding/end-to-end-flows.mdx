@@ -1,0 +1,153 @@
+---
+title: "Flow end-to-end"
+description: "Ikuti alur end-to-end utama KilatKoding, dari signup dan checkout sampai webhook, avatar, waitlist, dan AI."
+mode: "wide"
+---
+
+<Info>
+Halaman ini menjelaskan bagaimana satu aksi user bergerak melewati halaman, route API, service pihak ketiga, dan tabel database. Cocok untuk developer, operator, dan pembaca non-tech yang ingin paham gambaran prosesnya.
+</Info>
+
+## Peta flow utama
+
+| Flow | Dimulai dari | Menyentuh apa saja |
+| --- | --- | --- |
+| Auth dan onboarding dasar | halaman auth | Supabase Auth, `auth.users`, `profiles`, `subscriptions`, `user_roles` |
+| Checkout dan aktivasi subscription | dashboard billing | `POST /api/payments`, provider payment, webhook, `payments`, `subscriptions`, `webhook_events`, `audit_logs` |
+| Edit profil dan avatar | dashboard settings | `POST /api/profile/avatar`, Supabase Storage, `POST /api/profile`, `profiles`, `audit_logs` |
+| Waitlist dan contact | halaman publik | `POST /api/waitlist` atau `POST /api/contact`, Supabase atau Resend, rate limit |
+| AI request | UI AI produk | `POST /api/ai/chat` atau `POST /api/ai/generate`, provider AI, `ai_usage`, rate limit |
+
+## Flow auth dan onboarding dasar
+
+<Steps>
+  <Step title="User daftar atau login">
+    User masuk lewat halaman auth seperti `/auth/login` atau `/auth/sign-up`.
+  </Step>
+  <Step title="Supabase membuat atau memverifikasi session">
+    Session disimpan dalam alur auth Supabase. Callback seperti OTP dan OAuth masuk ke `/auth/confirm`.
+  </Step>
+  <Step title="Trigger database membuat data dasar user">
+    Saat user baru dibuat di `auth.users`, migration juga menyiapkan record default di `profiles`, `subscriptions`, dan `user_roles`.
+  </Step>
+  <Step title="Area login-aware membaca klaim session">
+    Dashboard, billing, settings, dan admin membaca klaim auth untuk menentukan akses.
+  </Step>
+</Steps>
+
+Kalau flow ini gagal, titik cek pertama biasanya:
+
+- Supabase public env,
+- redirect URL,
+- callback `/auth/confirm`,
+- kebijakan access control admin di `user_roles`.
+
+## Flow checkout sampai subscription aktif
+
+<Steps>
+  <Step title="User memilih plan di dashboard billing">
+    UI membaca katalog plan dari `config/subscriptions.ts`.
+  </Step>
+  <Step title="Client memanggil POST /api/payments">
+    Route memvalidasi body request, memastikan user login, lalu membuat record `payments` dengan status `PENDING`.
+  </Step>
+  <Step title="Server membuat sesi checkout provider">
+    Midtrans mengembalikan Snap token. Doku mengembalikan checkout URL.
+  </Step>
+  <Step title="User menyelesaikan pembayaran di provider">
+    Setelah itu user biasanya kembali ke `/order/[id]` atau fallback `/payment/callback`.
+  </Step>
+  <Step title="Provider memanggil webhook">
+    Webhook Midtrans atau Doku memverifikasi signature, mencatat event ke `webhook_events`, lalu memperbarui status payment.
+  </Step>
+  <Step title="Subscription diaktifkan">
+    Kalau payment menjadi `PAID`, route webhook mengaktifkan atau memperbarui `subscriptions`. Audit log juga ikut dicatat.
+  </Step>
+</Steps>
+
+Tabel yang terlibat:
+
+- `payments`
+- `subscriptions`
+- `webhook_events`
+- `audit_logs`
+
+## Flow edit profil dan avatar
+
+<Steps>
+  <Step title="User membuka dashboard settings">
+    Halaman settings membaca profile, role, dan avatar yang ada.
+  </Step>
+  <Step title="Client meminta signed upload URL">
+    `POST /api/profile/avatar` menerima `fileSize` dan `fileType`, lalu mengembalikan token upload kalau valid.
+  </Step>
+  <Step title="Browser upload file ke bucket avatars">
+    File disimpan ke path `${userId}/avatar` di Supabase Storage.
+  </Step>
+  <Step title="Client menyimpan referensi avatar ke profile">
+    `POST /api/profile` memperbarui `full_name`, `avatar_path`, dan `avatar_url`.
+  </Step>
+  <Step title="Avatar lama dibersihkan">
+    Kalau user mengganti avatar, object lama akan dicoba untuk dibersihkan. Audit log juga dibuat.
+  </Step>
+</Steps>
+
+Penyebab gagal yang paling umum:
+
+- auth belum aktif,
+- `SUPABASE_SERVICE_ROLE_KEY` belum siap untuk write tertentu,
+- file terlalu besar,
+- MIME type tidak didukung.
+
+## Flow waitlist dan contact
+
+<AccordionGroup>
+  <Accordion title="Waitlist">
+    Alurnya:
+
+    - user submit email di `/waitlist`,
+    - `POST /api/waitlist` melewati rate limit berbasis IP,
+    - payload divalidasi,
+    - data masuk ke tabel `waitlist`,
+    - duplikat email mengembalikan error yang bisa ditangani UI.
+  </Accordion>
+  <Accordion title="Contact form">
+    Alurnya:
+
+    - user submit nama, email, dan pesan di `/contact`,
+    - `POST /api/contact` melewati rate limit berbasis IP,
+    - payload divalidasi,
+    - server mengirim email lewat Resend,
+    - inbox tujuan diambil dari `CONTACT_EMAIL` atau fallback `EMAIL_FROM`.
+  </Accordion>
+</AccordionGroup>
+
+## Flow AI request
+
+<Steps>
+  <Step title="Client memanggil route AI">
+    UI produk memanggil `POST /api/ai/chat` atau `POST /api/ai/generate`.
+  </Step>
+  <Step title="Server melakukan authorization">
+    Route memeriksa provider, auth user, subscription plan, dan monthly usage limit.
+  </Step>
+  <Step title="Rate limit dihitung">
+    Limit request per 5 menit disesuaikan dengan plan user.
+  </Step>
+  <Step title="Request diteruskan ke model">
+    Server memilih model dari provider aktif lalu mengirim request.
+  </Step>
+  <Step title="Usage dicatat">
+    Setelah selesai, token usage disimpan ke `ai_usage`.
+  </Step>
+</Steps>
+
+Perilaku yang perlu dipahami:
+
+- `401` berarti user belum terautentikasi,
+- `429` bisa berarti rate limit request atau monthly usage limit,
+- `503` biasanya berarti provider belum dikonfigurasi.
+
+<Tip>
+Kalau kamu butuh kontrak endpoint yang lebih spesifik, lanjutkan ke [API reference](/kilatkoding/api-reference).
+</Tip>

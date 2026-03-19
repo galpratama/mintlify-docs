@@ -1,36 +1,80 @@
 ---
 title: "BelajarKoding Docs"
-description: "Portal dokumentasi produk BelajarKoding. Saat ini tersedia dokumentasi lengkap untuk KilatKoding."
+description: "Portal dokumentasi produk BelajarKoding. Mulai dari KilatKoding untuk setup, launch, dan rebrand boilerplate SaaS lebih cepat."
 ---
 
 <Info>
-Dokumentasi ini sekarang berfungsi sebagai portal multi-produk. Saat ini produk yang sudah didokumentasikan adalah KilatKoding.
+Portal ini disusun per produk. KilatKoding jadi produk pertama yang sudah punya dokumentasi lengkap, dan struktur ini siap dipakai saat produk lain ditambahkan nanti.
 </Info>
+
+## Bangun lebih cepat tanpa mulai dari nol
+
+Kalau kamu ingin membangun SaaS, portal member, atau produk AI tanpa memulai semuanya dari halaman kosong, mulai dari KilatKoding. Boilerplate ini sudah membawa fondasi yang biasanya paling lama dikerjakan: landing page, auth, dashboard, billing, admin, email, blog, AI, dan testing.
+
+Dokumentasi di portal ini membantu dua tipe pembaca sekaligus: orang non-teknis yang ingin tahu apa yang sudah siap dipakai, dan developer yang perlu setup, ubah, lalu launch dengan lebih terstruktur.
+
+<Columns cols={2}>
+  <Card title="Masuk ke dokumentasi KilatKoding" href="/kilatkoding" horizontal>
+    Buka pintu masuk utama untuk lihat alur baca, setup lintas OS, use case, reference teknis, dan panduan operasional.
+  </Card>
+  <Card title="Lihat use case paling cocok" href="/kilatkoding/use-cases" horizontal>
+    Cocokkan KilatKoding dengan waitlist pre-launch, subscription SaaS, portal client, produk AI, atau skenario rebrand untuk klien.
+  </Card>
+</Columns>
+
+## Kenapa mulai dari KilatKoding
+
+<Columns cols={2}>
+  <Card title="Tidak mulai dari nol">
+    Kamu langsung mulai dari fondasi aplikasi yang sudah punya auth, payment, email, admin, dashboard, dan halaman marketing.
+  </Card>
+  <Card title="Lebih dekat ke kebutuhan pasar Indonesia">
+    KilatKoding sudah menyiapkan integrasi seperti Midtrans dan Doku, plus flow yang lebih relevan untuk produk lokal.
+  </Card>
+  <Card title="Bisa dipakai non-tech dan developer">
+    Ada docs untuk planning, ownership, checklist launch, setup teknis, sampai operational runbook.
+  </Card>
+  <Card title="Enak untuk di-custom dan di-rebrand">
+    Kamu bisa ubah branding, pricing, halaman, feature toggle, flow produk, dan integrasi tanpa banyak menebak-nebak.
+  </Card>
+</Columns>
+
+## Mulai dari jalur yang paling cocok
+
+<Columns cols={3}>
+  <Card title="Pahami dulu" href="/kilatkoding/product-overview">
+    Mulai dari ringkasan produk, use case, dan halaman no-code vs developer untuk ambil keputusan lebih cepat.
+  </Card>
+  <Card title="Jalankan dan setup" href="/kilatkoding/getting-started">
+    Lanjut ke getting started, setup lokal, setup layanan, dan environment variables saat kamu siap menjalankan project.
+  </Card>
+  <Card title="Launch dan operasikan" href="/kilatkoding/launch-checklists">
+    Buka checklist launch, testing recipes, Vercel deployment, dan operational runbook sebelum produk tayang.
+  </Card>
+</Columns>
 
 ## Produk yang tersedia
 
 <Columns cols={2}>
-  <Card title="KilatKoding" href="/kilatkoding" horizontal>
-    Pelajari fitur, setup, konfigurasi, arsitektur, dan operasional boilerplate KilatKoding secara lengkap.
+  <Card title="KilatKoding" href="/kilatkoding">
+    KilatKoding adalah boilerplate SaaS Next.js untuk membangun produk lebih cepat, lalu menyesuaikannya dengan model bisnis kamu.
   </Card>
-  <Card title="Siap untuk produk berikutnya" horizontal>
-    Struktur navigasi sudah dipisahkan per produk, jadi dokumentasi baru bisa ditambahkan tanpa mengganggu dokumentasi KilatKoding.
+  <Card title="Produk berikutnya akan muncul di sini">
+    Struktur portal, bahasa, dan navigasi sudah dipisahkan per produk, jadi dokumentasi baru bisa masuk tanpa mengganggu KilatKoding.
   </Card>
 </Columns>
 
-## Cara memakai portal ini
+## Kalau kamu cuma punya 10 menit
 
-1. Mulai dari halaman [KilatKoding](/kilatkoding) untuk memahami isi boilerplate.
-2. Lanjutkan ke [Mulai dengan benar](/kilatkoding/getting-started) dan [Setup lokal](/kilatkoding/local-setup) kalau Anda ingin menjalankan project.
-3. Buka [Kustomisasi](/kilatkoding/customization) kalau Anda ingin mengganti branding, pricing, halaman, atau konten.
-4. Gunakan halaman teknis seperti [Arsitektur](/kilatkoding/architecture) dan [Database dan storage](/kilatkoding/database-and-storage) saat Anda mulai mengubah kode.
+1. Buka [KilatKoding](/kilatkoding) untuk lihat gambaran besar dan jalur baca.
+2. Baca [Use case KilatKoding](/kilatkoding/use-cases) untuk tahu apakah boilerplate ini cocok untuk produk kamu.
+3. Cek [Yang bisa dikerjakan tanpa coding vs butuh developer](/kilatkoding/no-code-vs-developer) supaya ekspektasi tim lebih jelas.
+4. Lanjut ke [Mulai dengan benar](/kilatkoding/getting-started) kalau kamu siap setup.
 
-## Tentang KilatKoding
+## Tentang cakupan dokumentasi ini
 
-KilatKoding adalah boilerplate SaaS berbasis Next.js untuk developer Indonesia. Repo ini sudah membawa auth Supabase, pembayaran Midtrans dan Doku, email lewat Resend, blog MDX, dashboard, admin panel, AI routes, dan fondasi testing.
-
-Dokumentasi publik ini merefleksikan kondisi kode di repo `kilatkoding-src` per 19 Maret 2026. Jika repo berubah, Anda bisa memperbarui halaman KilatKoding tanpa mengubah struktur portal.
+Dokumentasi publik ini merefleksikan kondisi kode di repo `kilatkoding-src` per 19 Maret 2026. Kalau source code berubah, kamu bisa memperbarui halaman KilatKoding tanpa perlu mengubah struktur portal multi-produk ini.
 
 <Tip>
-Kalau Anda juga ingin mengubah struktur dokumentasi ini nanti, mulai dari `docs.json`. Mintlify mengatur produk, navigasi, logo, dan navbar dari file itu.
+Kalau nanti kamu menambahkan produk lain ke portal ini, pertahankan pola yang sama: satu produk, satu entry menu utama, dan satu set halaman yang jelas dari overview sampai operasional.
 </Tip>

@@ -72,9 +72,77 @@ Jika env toggle tidak diisi, repo menganggap fitur tersebut aktif. Isi `false`, 
 | `PLAYWRIGHT_BASE_URL` | Playwright | Memungkinkan test E2E memakai server yang sudah hidup |
 | `CI` | GitHub Actions atau CI lain | Mengatur retry dan reporter tertentu di Playwright |
 
+## Profil toggle yang umum
+
+Bagian ini berguna kalau kamu ingin memulai dari kombinasi fitur yang realistis, bukan dari semua fitur aktif sekaligus.
+
+<AccordionGroup>
+  <Accordion title="Waitlist dulu, aplikasi nanti">
+    Cocok kalau kamu masih validasi ide.
+
+    ```env
+    NEXT_PUBLIC_ENABLE_AUTH=false
+    NEXT_PUBLIC_ENABLE_WAITLIST=true
+    NEXT_PUBLIC_ENABLE_CONTACT=true
+    NEXT_PUBLIC_ENABLE_PAYMENTS=false
+    NEXT_PUBLIC_ENABLE_ADMIN=false
+    NEXT_PUBLIC_ENABLE_AI=false
+    ```
+
+    Tetap siapkan `NEXT_PUBLIC_SUPABASE_URL` dan `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` karena waitlist memakai Supabase. Kalau contact form aktif, siapkan juga `RESEND_API_KEY`.
+  </Accordion>
+  <Accordion title="SaaS berlangganan tanpa AI">
+    Cocok untuk mayoritas produk SaaS klasik.
+
+    ```env
+    NEXT_PUBLIC_ENABLE_AUTH=true
+    NEXT_PUBLIC_ENABLE_WAITLIST=false
+    NEXT_PUBLIC_ENABLE_CONTACT=true
+    NEXT_PUBLIC_ENABLE_PAYMENTS=true
+    NEXT_PUBLIC_ENABLE_ADMIN=true
+    NEXT_PUBLIC_ENABLE_AI=false
+
+    PAYMENT_PROVIDER=doku
+    ```
+
+    Pastikan Supabase public env, `SUPABASE_SERVICE_ROLE_KEY`, dan credential payment provider sudah diisi.
+  </Accordion>
+  <Accordion title="SaaS AI dengan monetisasi plan">
+    Cocok kalau fitur utamanya memang AI.
+
+    ```env
+    NEXT_PUBLIC_ENABLE_AUTH=true
+    NEXT_PUBLIC_ENABLE_WAITLIST=false
+    NEXT_PUBLIC_ENABLE_CONTACT=false
+    NEXT_PUBLIC_ENABLE_PAYMENTS=true
+    NEXT_PUBLIC_ENABLE_ADMIN=true
+    NEXT_PUBLIC_ENABLE_AI=true
+
+    PAYMENT_PROVIDER=midtrans
+    AI_DEFAULT_PROVIDER=openai
+    ```
+
+    Selain env payment, kamu juga perlu `OPENAI_API_KEY` atau `ANTHROPIC_API_KEY` sesuai provider default yang dipilih.
+  </Accordion>
+  <Accordion title="Portal member atau client tanpa billing publik">
+    Cocok untuk area login tertutup, dashboard internal, atau workspace client.
+
+    ```env
+    NEXT_PUBLIC_ENABLE_AUTH=true
+    NEXT_PUBLIC_ENABLE_WAITLIST=false
+    NEXT_PUBLIC_ENABLE_CONTACT=false
+    NEXT_PUBLIC_ENABLE_PAYMENTS=false
+    NEXT_PUBLIC_ENABLE_ADMIN=false
+    NEXT_PUBLIC_ENABLE_AI=false
+    ```
+
+    Setup minimalnya cukup Supabase. Admin bisa dinyalakan belakangan kalau kamu butuh panel operasional internal.
+  </Accordion>
+</AccordionGroup>
+
 ## Contoh minimal `.env.local`
 
-Gunakan contoh ini kalau Anda hanya ingin auth, dashboard, dan satu payment provider:
+Gunakan contoh ini kalau kamu hanya ingin auth, dashboard, dan satu payment provider:
 
 ```env
 NEXT_PUBLIC_SUPABASE_URL=
@@ -103,5 +171,5 @@ ADMIN_EMAILS=you@example.com
 3. Setelah app hidup, buka `GET /api/health` untuk melihat readiness yang lebih detail.
 
 <Tip>
-Kalau sebuah fitur memang belum Anda pakai, lebih baik matikan lewat toggle daripada membiarkannya aktif tanpa konfigurasi.
+Kalau sebuah fitur memang belum kamu pakai, lebih baik matikan lewat toggle daripada membiarkannya aktif tanpa konfigurasi.
 </Tip>

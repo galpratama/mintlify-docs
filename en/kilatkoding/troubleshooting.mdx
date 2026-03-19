@@ -1,0 +1,100 @@
+---
+title: "Troubleshooting"
+description: "Solve common KilatKoding issues with a diagnosis checklist that points directly to the likely source of the problem."
+---
+
+## Start with these two checks
+
+Before you debug further, run:
+
+```bash
+npm run env:check
+```
+
+and inspect:
+
+```text
+GET /api/health
+```
+
+Those two checks are usually enough to tell you whether the issue comes from env config, feature toggles, or database connectivity.
+
+## Common issues
+
+<AccordionGroup>
+  <Accordion title="Auth pages or the dashboard do not work">
+    Check `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
+
+    If auth is intentionally not part of the product yet, set:
+
+    ```env
+    NEXT_PUBLIC_ENABLE_AUTH=false
+    ```
+  </Accordion>
+  <Accordion title="Billing or admin always shows a fallback state">
+    This usually means `SUPABASE_SERVICE_ROLE_KEY` is missing. Billing, webhooks, signed avatar URLs, audit logs, admin reporting, and persistent rate limits all depend on it.
+  </Accordion>
+  <Accordion title="Checkout fails while creating a payment">
+    Check:
+
+    - `NEXT_PUBLIC_ENABLE_PAYMENTS`
+    - `PAYMENT_PROVIDER`
+    - your Midtrans or Doku credentials
+    - the `payments` and `subscriptions` migrations
+  </Accordion>
+  <Accordion title="The payment succeeds at the gateway but the subscription never activates">
+    This usually means the webhook never arrived, the webhook URL is wrong, or signature verification failed. Check the correct webhook route and confirm the production domain is set correctly.
+  </Accordion>
+  <Accordion title="The contact form does not send email">
+    Check `RESEND_API_KEY`, `EMAIL_FROM`, and optionally `CONTACT_EMAIL`. Make sure the sender domain is verified in Resend.
+  </Accordion>
+  <Accordion title="AI routes return 503 or 429">
+    `503` usually means the provider is not configured. `429` usually means a usage limit or request rate limit has been reached.
+  </Accordion>
+  <Accordion title="Admin access does not appear">
+    Make sure the user exists in `user_roles` with the `admin` role. `ADMIN_EMAILS` only helps with the initial bootstrap.
+  </Accordion>
+  <Accordion title="Playwright fails the first time you run it">
+    Install the browser first:
+
+    ```bash
+    npx playwright install chromium
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Fast diagnosis checklist
+
+| Symptom | First thing to check |
+| --- | --- |
+| Many features show disabled or fallback states | `.env.local` and `npm run env:check` |
+| Login redirects behave strangely | Supabase redirect URLs and auth callback configuration |
+| Admin data is empty | Service role env and admin role assignment |
+| Payments never finalize | Webhook URL and signature verification |
+| Avatar uploads fail | Storage migration and service role env |
+| Contact form fails | Resend key and verified sender domain |
+
+## When to check the database directly
+
+Look at the database directly if the issue involves:
+
+- user roles,
+- subscription status,
+- payment records,
+- audit trail,
+- webhook event logs.
+
+The most likely tables to inspect are `user_roles`, `subscriptions`, `payments`, `audit_logs`, and `webhook_events`.
+
+## When to inspect code
+
+Go into the code if:
+
+- env values look correct but the behavior is still wrong,
+- you recently changed `config/*`,
+- you edited a route handler or dashboard component,
+- you added a new integration on top of the existing patterns.
+
+<Note>
+If you are doing a large rebrand, some issues that look like bugs are really just copy, navigation, or feature-toggle mismatches that have not been aligned yet.
+</Note>

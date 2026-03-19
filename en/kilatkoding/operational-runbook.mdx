@@ -1,0 +1,146 @@
+---
+title: "Operational runbook"
+description: "Use the KilatKoding operational runbook for auth, billing, webhook, admin, AI, email, and avatar incidents."
+mode: "wide"
+---
+
+<Info>
+This runbook focuses on what to check first during an incident, not every implementation detail. The goal is to speed up diagnosis and separate operational issues from feature development work.
+</Info>
+
+## Minimum operational routine
+
+Before assuming a complex incident, make these three checks a habit:
+
+1. Run `npm run env:check` in the relevant environment.
+2. Check `GET /api/health`.
+3. Match the user symptom against the features that are actually enabled in your product.
+
+## Incident playbooks
+
+<AccordionGroup>
+  <Accordion title="Health check shows degraded">
+    Check first:
+
+    - which features are `enabled` but still have `missing_env`,
+    - whether the database check is failing while admin or payments are active,
+    - whether the feature is actually supposed to be off and only the env or copy was not adjusted.
+
+    Escalate to a developer if:
+
+    - env values look correct but the database still reports `ok: false`,
+    - the degraded status appears without a clear configuration change.
+  </Accordion>
+  <Accordion title="Users cannot log in or reach the dashboard">
+    Check first:
+
+    - Supabase public env,
+    - auth redirect URLs,
+    - whether auth was intentionally turned off,
+    - whether the problem only happens after email verify, OAuth, or password reset.
+
+    Places to inspect:
+
+    - `/auth/error`,
+    - `/auth/confirm`,
+    - the Supabase Auth dashboard.
+  </Accordion>
+  <Accordion title="Payment succeeded in the gateway but the subscription is still inactive">
+    Check first:
+
+    - the provider webhook URL,
+    - signature verification,
+    - the `payments` table,
+    - the `subscriptions` table,
+    - the `webhook_events` table,
+    - the admin audit trail.
+
+    This almost always points to a webhook-layer issue, not a billing page issue.
+  </Accordion>
+  <Accordion title="Webhooks are duplicated or keep retrying">
+    Check first:
+
+    - whether the same event is already recorded in `webhook_events`,
+    - whether the latest status is `processing`, `processed`, or `failed`,
+    - whether the provider is retrying because the app did not return a stable `200`.
+
+    Important reminder:
+
+    - the repo already uses an idempotent event claim flow,
+    - duplicate delivery does not automatically mean duplicate payments.
+  </Accordion>
+  <Accordion title="Contact form is not sending email">
+    Check first:
+
+    - `RESEND_API_KEY`,
+    - `EMAIL_FROM`,
+    - sender domain verification in Resend,
+    - whether `CONTACT_EMAIL` points to the right inbox,
+    - whether the error looks like `429`, `503`, or `500`.
+
+    Usually:
+
+    - `503` means the feature is not ready,
+    - `429` means rate limiting,
+    - `500` means provider-side send failure.
+  </Accordion>
+  <Accordion title="Admin panel is missing or the user role is wrong">
+    Check first:
+
+    - `NEXT_PUBLIC_ENABLE_ADMIN`,
+    - `SUPABASE_SERVICE_ROLE_KEY`,
+    - the `user_roles` table,
+    - whether the bootstrap email in `ADMIN_EMAILS` has logged in at least once.
+
+    Important note:
+
+    - the source of truth for admin access is `user_roles`,
+    - `ADMIN_EMAILS` is only an early bootstrap mechanism, not the permanent role system.
+  </Accordion>
+  <Accordion title="AI route returns 429 or 503">
+    Check first:
+
+    - the provider key matching `AI_DEFAULT_PROVIDER`,
+    - whether the user is logged in,
+    - the user's current plan,
+    - monthly usage in `ai_usage`,
+    - the per-5-minute request limit.
+
+    Fast interpretation:
+
+    - `503` usually means the provider is not configured,
+    - `429` can mean request throttling or exhausted monthly quota.
+  </Accordion>
+  <Accordion title="Avatar upload fails or does not update">
+    Check first:
+
+    - the user is authenticated,
+    - the file is under 2 MB,
+    - the file type is allowed,
+    - the `avatars` bucket and storage policies exist,
+    - `POST /api/profile/avatar` returns a signed upload URL correctly.
+  </Accordion>
+</AccordionGroup>
+
+## When an issue is still operational, not a new bug
+
+Very often the problem is not a new bug yet when:
+
+- env values changed recently,
+- provider dashboards were just switched to the production domain,
+- a feature was just turned on or off,
+- copy or navigation still points to flows that are not actually active.
+
+## When to escalate directly to a developer
+
+Bring in a developer faster when:
+
+- the production build fails,
+- the database check fails without env changes,
+- webhooks keep failing for valid events,
+- admin or profile writes break even though the service role looks correct,
+- users report data that is no longer consistent across tables.
+
+<Tip>
+If you are doing a pre-launch review rather than incident response, the best next pages are [Launch checklists by use case](/en/kilatkoding/launch-checklists) and [Troubleshooting](/en/kilatkoding/troubleshooting).
+</Tip>

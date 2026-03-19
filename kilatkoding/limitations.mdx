@@ -1,0 +1,92 @@
+---
+title: "Batasan saat ini"
+description: "Kenali batasan, opini arsitektur, dan area roadmap KilatKoding supaya ekspektasi implementasi tetap realistis."
+mode: "wide"
+---
+
+<Warning>
+Halaman ini sengaja ditulis blak-blakan. Tujuannya supaya timmu tahu area mana yang memang sudah siap, area mana yang opiniatif, dan area mana yang masih butuh custom work yang cukup besar.
+</Warning>
+
+## Yang sudah kuat
+
+KilatKoding saat ini paling kuat untuk:
+
+- SaaS web berbasis Next.js,
+- auth dan dashboard dasar,
+- subscription bulanan sederhana,
+- payment lokal Indonesia lewat Midtrans atau Doku,
+- admin operasional ringan,
+- waitlist, contact form, blog, roadmap, dan marketing pages,
+- fitur AI dasar dengan usage tracking dan rate limit.
+
+## Batasan produk yang perlu dipahami
+
+| Area | Batasan saat ini |
+| --- | --- |
+| Multi-tenant atau team workspace | Belum hadir sebagai fitur jadi |
+| Payment provider | Fokus ke Midtrans dan Doku |
+| Email provider | Fokus ke Resend |
+| Mobile app | Belum ada companion mobile starter yang siap dipakai |
+| Marketplace kompleks | Belum ada split payout, escrow, atau vendor settlement |
+| Usage-based billing | Belum jadi model billing utama |
+| AI billing model | Saat ini berfokus ke monthly token allowance per plan |
+| Notification center | Masih roadmap |
+| API keys management | Masih roadmap |
+
+## Opini arsitektur yang memengaruhi implementasi
+
+KilatKoding saat ini punya beberapa opini desain yang penting:
+
+- satu user hanya punya satu row subscription aktif,
+- catalog plan ditentukan server-side dari config,
+- admin access bertumpu pada `user_roles`, bukan sekadar env,
+- payment finalization ditentukan webhook, bukan redirect halaman order,
+- rate limit persisten baru aktif penuh kalau service role tersedia,
+- avatar disimpan di Supabase Storage bucket `avatars`,
+- AI usage dicatat per user dan per bulan.
+
+## Implikasinya untuk tim produk
+
+Ini biasanya berarti:
+
+- kalau kamu butuh per-seat billing, perluasan schema akan cukup besar,
+- kalau kamu butuh provider payment lain, harus ada kerja integrasi baru,
+- kalau kamu butuh workflow AI yang rumit, route dasar sudah ada tetapi experience produk tetap harus dibangun,
+- kalau kamu butuh mobile-first, web app ini lebih cocok jadi fondasi backend dan admin daripada pengalaman akhir mobile.
+
+## Area yang sering disalahpahami sebagai “sudah jadi”
+
+Beberapa hal ini terlihat dekat, tetapi belum berarti siap pakai penuh:
+
+- marketplace multi-seller,
+- referral program,
+- notification center,
+- team invite dan role kompleks,
+- usage metering lintas fitur,
+- API key lifecycle management.
+
+## Kapan tetap masuk akal memakai KilatKoding
+
+Tetap sangat masuk akal kalau kamu ingin menghemat waktu pada:
+
+- marketing site,
+- auth,
+- dashboard dasar,
+- billing sederhana,
+- operasional admin,
+- integrasi payment lokal,
+- launch velocity.
+
+## Kapan sebaiknya kamu siapkan custom layer lebih besar
+
+Siapkan effort tambahan kalau:
+
+- produkmu bukan subscription SaaS klasik,
+- inti produk ada di model organisasi multi-user,
+- logika payment sangat spesifik,
+- data model domainmu jauh lebih penting daripada area marketing dan auth.
+
+<Tip>
+Kalau kamu sedang menilai kecocokan sebelum build, baca [Use case KilatKoding](/kilatkoding/use-cases) dan [Tanpa coding vs perlu developer](/kilatkoding/no-code-vs-developer).
+</Tip>

@@ -1,0 +1,140 @@
+---
+title: "Resep testing"
+description: "Ikuti resep testing manual dan otomatis KilatKoding untuk auth, profile, payment, webhook, admin, waitlist, contact, dan AI."
+mode: "wide"
+---
+
+<Info>
+Halaman ini melengkapi halaman testing utama. Bedanya, di sini fokusnya adalah “kalau mau mengetes fitur tertentu, langkah konkret apa yang harus saya lakukan?”
+</Info>
+
+## Command otomatis
+
+| Command | Kapan dipakai |
+| --- | --- |
+| `npm run env:check` | Sebelum men-debug fitur yang tidak siap |
+| `npm run lint` | Sebelum commit atau deploy |
+| `npm run typecheck` | Saat ada perubahan TypeScript atau schema |
+| `npm test` | Saat ingin verifikasi logic route, provider, dan helper |
+| `npm run e2e` | Saat ingin smoke test flow publik utama |
+
+## Resep manual per area
+
+<AccordionGroup>
+  <Accordion title="Auth dan dashboard">
+    Langkah:
+
+    1. Buka `/auth/sign-up` dan buat akun test baru.
+    2. Verifikasi bahwa profile dan subscription default ikut terbentuk.
+    3. Login via `/auth/login`.
+    4. Pastikan `/dashboard` bisa dibuka.
+    5. Uji forgot password dan update password.
+
+    Hasil yang diharapkan:
+
+    - login berhasil,
+    - dashboard tampil,
+    - tidak ada redirect aneh sesudah callback auth.
+  </Accordion>
+  <Accordion title="Profile dan avatar">
+    Langkah:
+
+    1. Login sebagai user test.
+    2. Buka `/dashboard/settings`.
+    3. Ubah nama lengkap.
+    4. Upload avatar PNG di bawah 2 MB.
+    5. Simpan perubahan.
+
+    Hasil yang diharapkan:
+
+    - `POST /api/profile/avatar` berhasil,
+    - `POST /api/profile` berhasil,
+    - avatar baru tampil di UI,
+    - avatar lama tidak terus muncul setelah refresh.
+  </Accordion>
+  <Accordion title="Waitlist dan contact">
+    Langkah:
+
+    1. Buka `/waitlist` dan kirim email test.
+    2. Kirim email yang sama sekali lagi untuk melihat handling duplikat.
+    3. Buka `/contact` dan kirim pesan test.
+
+    Hasil yang diharapkan:
+
+    - waitlist insert sukses,
+    - duplikat mendapat respons yang jelas,
+    - contact form mengirim email atau paling tidak gagal dengan pesan yang bisa dijelaskan.
+  </Accordion>
+  <Accordion title="Billing dan checkout">
+    Langkah:
+
+    1. Login sebagai user test.
+    2. Buka `/dashboard/billing`.
+    3. Pilih satu plan.
+    4. Jalankan checkout sandbox Midtrans atau Doku.
+    5. Pastikan order page terbuka sesudah flow selesai.
+
+    Hasil yang diharapkan:
+
+    - record `payments` dibuat dengan status `PENDING`,
+    - webhook provider masuk,
+    - payment berubah ke status final yang sesuai,
+    - subscription ikut aktif kalau payment sukses.
+  </Accordion>
+  <Accordion title="Webhook Midtrans atau Doku">
+    Langkah:
+
+    1. Pastikan order test sudah ada.
+    2. Trigger webhook sandbox dari provider.
+    3. Cek `webhook_events`, `payments`, dan `subscriptions`.
+    4. Cek admin dashboard.
+
+    Hasil yang diharapkan:
+
+    - event tercatat,
+    - duplicate event tidak membuat efek ganda,
+    - audit log ikut bertambah.
+  </Accordion>
+  <Accordion title="Admin dashboard">
+    Langkah:
+
+    1. Pastikan akun test punya role `admin`.
+    2. Buka `/admin`.
+    3. Cek metrics, payment history, webhook events, dan audit trail.
+    4. Uji perubahan role user lain.
+
+    Hasil yang diharapkan:
+
+    - panel admin bisa dibuka,
+    - data tampil,
+    - role update sukses dan tercatat di audit log.
+  </Accordion>
+  <Accordion title="AI routes">
+    Langkah:
+
+    1. Login sebagai user test dengan plan yang sesuai.
+    2. Panggil `POST /api/ai/generate` untuk request sederhana.
+    3. Panggil `POST /api/ai/chat` dari UI atau test client.
+    4. Uji perilaku saat quota bulanan hampir habis atau rate limit tercapai.
+
+    Hasil yang diharapkan:
+
+    - request valid menghasilkan output,
+    - `ai_usage` bertambah,
+    - respons `429` dan `503` bisa dipahami bila dipicu.
+  </Accordion>
+</AccordionGroup>
+
+## Urutan test yang paling hemat waktu
+
+1. `npm run env:check`
+2. auth
+3. profile
+4. payment dan webhook jika aktif
+5. admin jika aktif
+6. AI jika aktif
+7. `GET /api/health`
+
+<Tip>
+Kalau target deploy utamamu adalah Vercel, baca [Deployment Vercel](/kilatkoding/vercel-deployment) setelah halaman ini.
+</Tip>

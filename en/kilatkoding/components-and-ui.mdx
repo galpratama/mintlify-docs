@@ -1,0 +1,97 @@
+---
+title: "Components and UI"
+description: "Understand the KilatKoding UI system, the components that are already available, and the areas you will touch most often during rebranding."
+mode: "wide"
+---
+
+## What KilatKoding uses
+
+KilatKoding uses:
+
+- Tailwind CSS 3
+- shadcn/ui
+- `next-themes`
+- CSS variables in `app/globals.css` and `app/marketing.css`
+- a marketing design preset system
+
+## Two component layers you should know
+
+| Layer | Location | Purpose |
+| --- | --- | --- |
+| Primitive UI | `components/ui/` | Button, input, dialog, table, tabs, badge, and other base components |
+| Product components | `components/sections/`, `components/dashboard/`, `components/admin/`, `components/docs/` | Higher-level blocks that are ready to use in real pages |
+
+## Base components already installed
+
+The repository currently includes 44 shadcn/ui primitives, including:
+
+- form controls such as `input`, `textarea`, `checkbox`, `select`, `switch`
+- layout and display components such as `card`, `table`, `tabs`, `accordion`, `sheet`
+- feedback components such as `alert`, `alert-dialog`, `tooltip`, `sonner`
+- navigation helpers such as `breadcrumb`, `navigation-menu`, `pagination`
+
+## Existing showcases
+
+| Route | Purpose |
+| --- | --- |
+| `/docs/components` | Public UI component showcase with foundations, controls, forms, navigation, overlays, data, and dashboard examples |
+| `/dashboard/components` | Dashboard and admin showcase for logged-in users |
+
+The public `/docs/components` page currently shows 68 ready-to-use demos, covering both primitives and dashboard-oriented components.
+
+## Public showcase categories
+
+| Category | Example content |
+| --- | --- |
+| Foundations | badge, button, card, avatar, separator |
+| Controls | switch, slider, toggle, radio group |
+| Forms | input, textarea, form, checkbox, select |
+| Navigation | breadcrumb, navigation menu, tabs, pagination |
+| Overlays | dialog, drawer, sheet, popover, tooltip |
+| Data | table, chart, progress, skeleton |
+| Dashboard | ready-to-use examples for product-facing UI |
+
+## Marketing design preset system
+
+The marketing layer supports 12 design presets:
+
+- `default`
+- `monochrome`
+- `newsprint`
+- `luxury`
+- `academia`
+- `saas`
+- `professional`
+- `enterprise`
+- `neo-brutalism`
+- `bauhaus`
+- `web3`
+- `terminal`
+
+These presets are useful if you want to:
+
+- compare different visual directions without rewriting page structure,
+- show style variations to a client,
+- pick a design direction before deeper polishing.
+
+## Files you will usually touch during UI changes
+
+| Goal | File |
+| --- | --- |
+| Global color and radius tokens | `app/globals.css` |
+| Marketing-specific styling | `app/marketing.css` |
+| Tailwind extensions | `tailwind.config.ts` |
+| shadcn/ui project config | `components.json` |
+| Landing page sections | `components/sections/*` |
+| Header and footer | `components/layout/*` |
+
+## Recommendations when rebranding
+
+1. Change copy and page structure first.
+2. Then adjust colors, typography, and spacing.
+3. Use `components/ui/` as your base layer instead of inventing new primitives without a strong reason.
+4. Recheck both public pages and dashboard pages after the change.
+
+<Tip>
+If you want a fast but still coherent visual pass, start from a marketing preset and then refine the global CSS tokens.
+</Tip>

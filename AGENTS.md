@@ -9,7 +9,9 @@ This repository is the public documentation portal for BelajarKoding, built with
 Current documentation scope:
 
 - Product portal home page at `index.mdx`
+- English portal home page at `en/index.mdx`
 - Dedicated product documentation for KilatKoding under `kilatkoding/`
+- English KilatKoding documentation under `en/kilatkoding/`
 - Site-wide configuration in `docs.json`
 
 The navigation is organized by product. KilatKoding must remain visible as its own dedicated product section in `docs.json`.
@@ -59,7 +61,9 @@ npx mint update
 ## Information architecture rules
 
 - Keep `index.mdx` as the BelajarKoding docs portal page.
+- Keep `en/index.mdx` as the English portal page.
 - Keep KilatKoding docs inside the `kilatkoding/` directory.
+- Keep English KilatKoding docs inside the `en/kilatkoding/` directory.
 - If another product is added later, give it its own dedicated product entry in `docs.json`.
 - Do not mix multiple products into the same product navigation group.
 - Prefer shallow, readable groupings over deeply nested navigation.
@@ -70,8 +74,10 @@ This documentation is written for both non-technical and technical readers.
 
 Write with these rules:
 
-- Primary language: Bahasa Indonesia, unless the user asks otherwise
+- Maintain Indonesian and English versions in parallel for KilatKoding docs
+- Primary language for the default site tree: Bahasa Indonesia
 - Use active voice and second person
+- For Indonesian docs, use "kamu" instead of "Anda" and keep the tone clear, friendly, and slightly informal
 - Keep sentences concise
 - Explain what something is before explaining how to use it
 - Prefer plain language before technical jargon
@@ -107,10 +113,11 @@ Avoid swapping between multiple terms for the same concept without a reason.
 When documentation changes materially:
 
 1. Update or add the relevant MDX page.
-2. Update `docs.json` navigation if needed.
-3. Check internal links.
-4. Run `npx mint validate`.
-5. Run `npx mint broken-links`.
+2. If the page is part of KilatKoding docs, update both `kilatkoding/` and `en/kilatkoding/` unless the user explicitly asks for a single language only.
+3. Update `docs.json` navigation if needed.
+4. Check internal links.
+5. Run `npx mint validate`.
+6. Run `npx mint broken-links`.
 
 ## Current product coverage
 
@@ -122,5 +129,7 @@ KilatKoding docs currently cover:
 - service setup and env vars
 - features, routes, and customization
 - UI, architecture, database, deployment, and troubleshooting
+
+This coverage now exists in both Indonesian and English.
 
 Preserve this structure unless there is a clear documentation reason to reorganize it.

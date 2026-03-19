@@ -1,0 +1,96 @@
+---
+title: "Getting started"
+description: "Prepare your early decisions, service accounts, and setup order before you run KilatKoding."
+---
+
+## Before you run the project
+
+Do not start with `npm run dev` right away. Decide first which features you actually want to use. KilatKoding is intentionally broad, but not every product needs every module.
+
+## Choose the path that fits you
+
+### If you are non-technical
+
+Use this documentation to:
+
+- understand which pages and features are already included,
+- prepare the service accounts that the product needs,
+- give clear direction to a developer or AI coding assistant.
+
+### If you are a developer
+
+Use this documentation to:
+
+- choose which features stay enabled,
+- fill out `.env.local`,
+- run Supabase migrations,
+- adjust branding and pricing,
+- verify build, test, and deployment.
+
+## Early decision checklist
+
+| Decision | Options | Impact |
+| --- | --- | --- |
+| Auth | Enabled or disabled | Controls login, signup, dashboard, settings, and admin access |
+| Payments | Midtrans, Doku, or disabled | Controls billing, checkout, and webhooks |
+| Contact form | Enabled or disabled | Determines whether you need Resend for contact submissions |
+| Waitlist | Enabled or disabled | Determines whether the waitlist page is part of the product |
+| AI | Enabled or disabled | Determines whether you need OpenAI or Anthropic keys |
+| Admin | Enabled or disabled | Determines whether the admin panel and role management are active |
+
+## Service accounts you may need
+
+| Service | Required? | Used for |
+| --- | --- | --- |
+| Supabase | Yes, if auth or app data is active | Auth, database, profile, subscriptions, payments, waitlist, audit, and rate limits |
+| Resend | Optional | Contact form, welcome email, invoice email |
+| Midtrans | Optional | Checkout with Snap |
+| Doku | Optional | Checkout with JOKUL |
+| OpenAI or Anthropic | Optional | AI features |
+
+## Fast setup playbooks
+
+If you do not want to read every page from the start, use one of these paths first and then go deeper into the linked docs.
+
+| Goal | Common starting toggles | Minimum services | Read next |
+| --- | --- | --- | --- |
+| Validate an idea with a waitlist first | Auth `off`, Waitlist `on`, Contact optional, Payments `off`, Admin `off`, AI `off` | Supabase, optionally Resend | [KilatKoding use cases](/en/kilatkoding/use-cases), [Services setup](/en/kilatkoding/services-setup), [Customization](/en/kilatkoding/customization) |
+| Subscription SaaS without AI | Auth `on`, Payments `on`, Admin `on`, Contact optional, AI `off` | Supabase + Midtrans or Doku | [Services setup](/en/kilatkoding/services-setup), [Environment variables](/en/kilatkoding/environment-variables), [Testing and deployment](/en/kilatkoding/testing-and-deployment) |
+| SaaS with AI features | Auth `on`, Payments optional, Admin `on`, AI `on` | Supabase + OpenAI or Anthropic, plus a payment provider if you charge subscriptions | [AI and tooling](/en/kilatkoding/ai-and-tooling), [Services setup](/en/kilatkoding/services-setup), [Environment variables](/en/kilatkoding/environment-variables) |
+| Member portal or client portal | Auth `on`, Payments optional, Admin optional, Contact optional, AI `off` | Supabase | [Customization](/en/kilatkoding/customization), [Components and UI](/en/kilatkoding/components-and-ui), [Architecture](/en/kilatkoding/architecture) |
+
+The `on` and `off` labels above refer to the `NEXT_PUBLIC_ENABLE_*` toggles documented in [Environment variables](/en/kilatkoding/environment-variables).
+
+## Recommended order of work
+
+<Steps>
+  <Step title="Decide which features stay active">
+    Choose the modules you want to use. Later you will control them through `NEXT_PUBLIC_ENABLE_*` values in `.env.local`.
+  </Step>
+  <Step title="Prepare service accounts">
+    Create a Supabase project first. Add Resend, Midtrans, Doku, or an AI provider only if your product will actually use them.
+  </Step>
+  <Step title="Run local setup">
+    Follow [Local setup](/en/kilatkoding/local-setup) for your operating system.
+  </Step>
+  <Step title="Fill environment variables">
+    Use [Environment variables](/en/kilatkoding/environment-variables) as the main reference while filling `.env.local`.
+  </Step>
+  <Step title="Verify readiness">
+    Run `npm run env:check`, then check `GET /api/health` after the app is running.
+  </Step>
+</Steps>
+
+## What success should look like
+
+Before you start large customization work, make sure these basics already work:
+
+- the landing page loads,
+- the auth flow works or is intentionally disabled,
+- the dashboard opens for logged-in users,
+- the payment flow works if you kept payments enabled,
+- `npm run lint`, `npm run typecheck`, and `npm test` do not fail.
+
+<Tip>
+It is completely normal to enable only part of the boilerplate. KilatKoding is designed so unused areas can be turned off through toggles and show a clear fallback state.
+</Tip>

@@ -1,0 +1,54 @@
+---
+title: "Glossary"
+description: "Understand the technical and product terms that appear often in the KilatKoding documentation."
+mode: "wide"
+---
+
+## Core terms
+
+| Term | Simple meaning |
+| --- | --- |
+| Auth | The login, signup, email verification, and session system |
+| Audit log | A record of important events such as admin actions, profile changes, and payment outcomes |
+| Boilerplate | A project foundation that already includes structure, features, and integrations |
+| Callback URL | A URL used by a provider to return the user or notify the app |
+| Contact form | A public form that sends a message to the team inbox |
+| Dashboard | The post-login product area for end users |
+| Environment variables | Configuration values loaded from `.env` files or hosting dashboards |
+| Feature toggle | A flag such as `NEXT_PUBLIC_ENABLE_*` used to enable or disable a product area |
+| Fallback mode | A state where the feature is conceptually active, but its required env or service is not fully ready |
+| Health check | An endpoint such as `GET /api/health` used to inspect system readiness |
+| Magic Link | Passwordless login through a link sent by email |
+| Metadata | Data such as title, description, and preview images for browsers and social sharing |
+| Migration | A SQL file that changes database schema in a structured way |
+| Payment provider | A payment gateway such as Midtrans or Doku |
+| Plan | A subscription tier such as `FREE`, `BASIC`, `PRO`, or `ULTIMATE` |
+| Rate limit | A maximum number of requests allowed within a time window |
+| RLS | Row Level Security, rules that control who can read or change specific rows |
+| Route | A page URL or API endpoint in the application |
+| Service role key | A Supabase server-only secret with broader permissions |
+| Signed upload URL | A temporary URL that lets the browser upload a file safely |
+| Subscription | A user's billing state, including plan, active period, and cancel status |
+| Use case | A real product scenario that maps to how KilatKoding is used |
+| Webhook | A server-to-server callback from an external provider such as a payment gateway |
+
+## Terms that are easy to confuse
+
+<AccordionGroup>
+  <Accordion title="Auth vs admin">
+    Auth means a user can log in. Admin means certain logged-in users have extra operational access. Every admin needs auth, but not every authenticated user is an admin.
+  </Accordion>
+  <Accordion title="Publishable key vs service role key">
+    A publishable key is safe for browser-side usage. A service role key is a server-only secret with stronger permissions, so it must never be exposed to the client.
+  </Accordion>
+  <Accordion title="Disabled by flag vs not configured">
+    `Disabled by flag` means the feature was intentionally turned off through a toggle. `Not configured` means the feature is still considered active, but the required env or backing service is not ready yet.
+  </Accordion>
+  <Accordion title="Order page vs payment webhook">
+    The order page is what the user sees after checkout. The payment webhook is the server-to-server event that actually determines whether a payment is finalized and a subscription becomes active.
+  </Accordion>
+</AccordionGroup>
+
+<Tip>
+If you want to see how these terms connect inside real product flows, read [End-to-end flows](/en/kilatkoding/end-to-end-flows) and [Database map](/en/kilatkoding/database-map).
+</Tip>

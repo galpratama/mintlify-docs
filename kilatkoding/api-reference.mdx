@@ -1,0 +1,459 @@
+---
+title: "API reference"
+description: "Referensi kontrak endpoint KilatKoding, termasuk auth user routes, public routes, admin routes, AI routes, dan webhook."
+mode: "wide"
+---
+
+<Warning>
+Contoh payload di halaman ini disederhanakan supaya mudah dibaca. Beberapa route juga menambahkan header rate limit seperti `X-RateLimit-Limit`, `X-RateLimit-Remaining`, dan `X-RateLimit-Reset`.
+</Warning>
+
+## Ringkasan endpoint
+
+| Kelompok | Endpoint utama |
+| --- | --- |
+| Public | `POST /api/contact`, `POST /api/waitlist`, `GET /api/health` |
+| User login | `POST /api/payments`, `POST /api/subscription`, `POST /api/profile`, `POST /api/profile/avatar` |
+| Admin | `POST /api/admin/users/role` |
+| AI | `POST /api/ai/chat`, `POST /api/ai/generate` |
+| Provider callback | `POST /api/webhooks/midtrans`, `POST /api/webhooks/doku` |
+
+## Public endpoint
+
+<AccordionGroup>
+  <Accordion title="POST /api/contact">
+    | Properti | Nilai |
+    | --- | --- |
+    | Auth | Tidak perlu login |
+    | Feature gate | Contact feature harus aktif |
+    | Rate limit | 5 request per jam per IP |
+    | Tujuan | Mengirim pesan dari form kontak via Resend |
+
+    Request body:
+
+    ```json
+    {
+      "name": "Galang",
+      "email": "galang@example.com",
+      "message": "Halo, saya ingin demo."
+    }
+    ```
+
+    Respons sukses:
+
+    ```json
+    {
+      "success": true
+    }
+    ```
+
+    Respons umum:
+
+    | Status | Kapan terjadi |
+    | --- | --- |
+    | `400` | Field wajib tidak lengkap atau email tidak valid |
+    | `429` | Rate limit kontak tercapai |
+    | `503` | Fitur contact belum aktif atau env belum siap |
+    | `500` | Resend gagal mengirim email |
+  </Accordion>
+  <Accordion title="POST /api/waitlist">
+    | Properti | Nilai |
+    | --- | --- |
+    | Auth | Tidak perlu login |
+    | Feature gate | Waitlist feature harus aktif |
+    | Rate limit | 5 request per jam per IP |
+    | Tujuan | Menyimpan lead ke tabel `waitlist` |
+
+    Request body:
+
+    ```json
+    {
+      "email": "galang@example.com",
+      "name": "Galang"
+    }
+    ```
+
+    Respons sukses:
+
+    ```json
+    {
+      "success": true
+    }
+    ```
+
+    Respons umum:
+
+    | Status | Kapan terjadi |
+    | --- | --- |
+    | `400` | Email tidak valid |
+    | `409` | Email sudah pernah terdaftar |
+    | `429` | Rate limit waitlist tercapai |
+    | `503` | Fitur waitlist belum aktif atau env belum siap |
+    | `500` | Insert ke database gagal |
+  </Accordion>
+  <Accordion title="GET /api/health">
+    | Properti | Nilai |
+    | --- | --- |
+    | Auth | Tidak perlu login |
+    | Tujuan | Mengecek readiness fitur dan database |
+
+    Respons inti:
+
+    ```json
+    {
+      "status": "ok",
+      "payment_provider": "doku",
+      "checks": {
+        "supabase_public": true,
+        "supabase_service_role": true,
+        "resend": true
+      },
+      "database": {
+        "ok": true,
+        "latency_ms": 24
+      }
+    }
+    ```
+
+    Catatan:
+
+    - status `200` dipakai saat sistem sehat untuk fitur aktif,
+    - status `503` dipakai saat ada fitur aktif yang belum siap atau check database gagal,
+    - respons juga membawa map per fitur yang berisi `enabled`, `missing_env`, dan `disabled_by_flag`.
+  </Accordion>
+</AccordionGroup>
+
+## Endpoint untuk user login
+
+<AccordionGroup>
+  <Accordion title="POST /api/payments">
+    | Properti | Nilai |
+    | --- | --- |
+    | Auth | Wajib login |
+    | Feature gate | Payments harus aktif dan siap |
+    | Rate limit | 5 request per 15 menit per user |
+    | Tujuan | Membuat pending payment dan sesi checkout provider |
+
+    Request body:
+
+    ```json
+    {
+      "plan": "PRO"
+    }
+    ```
+
+    Respons sukses Midtrans:
+
+    ```json
+    {
+      "provider": "midtrans",
+      "token": "snap-token",
+      "orderId": "KK-1742360000000-AB12CD34"
+    }
+    ```
+
+    Respons sukses Doku:
+
+    ```json
+    {
+      "provider": "doku",
+      "payment_url": "https://sandbox.doku.com/...",
+      "orderId": "KK-1742360000000-AB12CD34"
+    }
+    ```
+
+    Respons umum:
+
+    | Status | Kapan terjadi |
+    | --- | --- |
+    | `400` | `plan` tidak valid atau tidak tersedia |
+    | `401` | User belum login |
+    | `429` | Rate limit payment tercapai |
+    | `503` | Payments feature belum siap atau provider belum terkonfigurasi |
+    | `500` | Gagal membuat record payment |
+  </Accordion>
+  <Accordion title="POST /api/subscription">
+    | Properti | Nilai |
+    | --- | --- |
+    | Auth | Wajib login |
+    | Tujuan | Cancel atau resume subscription aktif |
+
+    Request body:
+
+    ```json
+    {
+      "action": "cancel"
+    }
+    ```
+
+    Nilai valid:
+
+    - `cancel`
+    - `resume`
+
+    Respons sukses:
+
+    ```json
+    {
+      "success": true,
+      "status": "cancel_at_period_end"
+    }
+    ```
+
+    Atau:
+
+    ```json
+    {
+      "success": true,
+      "status": "active"
+    }
+    ```
+
+    Respons umum:
+
+    | Status | Kapan terjadi |
+    | --- | --- |
+    | `400` | Action tidak valid |
+    | `401` | User belum login |
+    | `503` | Konfigurasi server untuk billing belum siap |
+  </Accordion>
+  <Accordion title="POST /api/profile">
+    | Properti | Nilai |
+    | --- | --- |
+    | Auth | Wajib login |
+    | Tujuan | Menyimpan nama lengkap dan referensi avatar profile |
+
+    Request body:
+
+    ```json
+    {
+      "full_name": "Galang Pratama",
+      "avatar_path": "user-id/avatar",
+      "avatar_url": "https://signed-url.example.com/avatar"
+    }
+    ```
+
+    Respons sukses:
+
+    ```json
+    {
+      "success": true,
+      "profile": {
+        "full_name": "Galang Pratama",
+        "avatar_path": "user-id/avatar",
+        "avatar_url": "https://signed-url.example.com/avatar"
+      }
+    }
+    ```
+
+    Respons umum:
+
+    | Status | Kapan terjadi |
+    | --- | --- |
+    | `400` | Body profile tidak valid |
+    | `401` | User belum login |
+    | `500` | Update profile gagal |
+    | `503` | Konfigurasi write server-side belum siap |
+  </Accordion>
+  <Accordion title="POST /api/profile/avatar">
+    | Properti | Nilai |
+    | --- | --- |
+    | Auth | Wajib login |
+    | Feature gate | Auth harus aktif |
+    | Tujuan | Membuat signed upload URL untuk avatar |
+
+    Request body:
+
+    ```json
+    {
+      "fileSize": 180000,
+      "fileType": "image/png"
+    }
+    ```
+
+    Respons sukses:
+
+    ```json
+    {
+      "bucket": "avatars",
+      "path": "user-id/avatar",
+      "token": "signed-upload-token"
+    }
+    ```
+
+    Respons umum:
+
+    | Status | Kapan terjadi |
+    | --- | --- |
+    | `400` | Ukuran file lebih dari 2 MB atau MIME type tidak didukung |
+    | `401` | User belum login |
+    | `500` | Gagal membuat signed upload URL |
+    | `503` | Auth feature belum aktif |
+  </Accordion>
+</AccordionGroup>
+
+## Endpoint admin
+
+<AccordionGroup>
+  <Accordion title="POST /api/admin/users/role">
+    | Properti | Nilai |
+    | --- | --- |
+    | Auth | Wajib login |
+    | Authorization | Wajib role `admin` |
+    | Tujuan | Mengubah role user menjadi `admin` atau `member` |
+
+    Request body:
+
+    ```json
+    {
+      "user_id": "550e8400-e29b-41d4-a716-446655440000",
+      "role": "admin"
+    }
+    ```
+
+    Respons sukses:
+
+    ```json
+    {
+      "success": true,
+      "user_id": "550e8400-e29b-41d4-a716-446655440000",
+      "role": "admin"
+    }
+    ```
+
+    Respons umum:
+
+    | Status | Kapan terjadi |
+    | --- | --- |
+    | `400` | Body invalid atau admin mencoba menurunkan role dirinya sendiri |
+    | `401` | User belum login |
+    | `403` | User login tetapi bukan admin |
+    | `500` | Update role gagal |
+    | `503` | Fitur admin belum siap dari sisi server |
+  </Accordion>
+</AccordionGroup>
+
+## Endpoint AI
+
+<AccordionGroup>
+  <Accordion title="POST /api/ai/chat">
+    | Properti | Nilai |
+    | --- | --- |
+    | Auth | Wajib login |
+    | Rate limit | Berdasarkan plan user, per 5 menit |
+    | Tujuan | Streaming chat AI |
+
+    Request body:
+
+    ```json
+    {
+      "provider": "openai",
+      "messages": [
+        {
+          "role": "user",
+          "content": "Bantu saya merangkum brief ini."
+        }
+      ]
+    }
+    ```
+
+    Respons sukses:
+
+    - stream UI message response, bukan JSON biasa,
+    - usage dicatat setelah stream selesai.
+
+    Respons umum:
+
+    | Status | Kapan terjadi |
+    | --- | --- |
+    | `400` | `messages` tidak dikirim |
+    | `401` | User belum login |
+    | `429` | Rate limit request atau monthly usage limit tercapai |
+    | `503` | Provider AI belum dikonfigurasi |
+  </Accordion>
+  <Accordion title="POST /api/ai/generate">
+    | Properti | Nilai |
+    | --- | --- |
+    | Auth | Wajib login |
+    | Rate limit | Berdasarkan plan user, per 5 menit |
+    | Tujuan | One-shot text generation |
+
+    Request body:
+
+    ```json
+    {
+      "provider": "openai",
+      "prompt": "Buat deskripsi singkat produk",
+      "system": "Gunakan gaya bahasa formal"
+    }
+    ```
+
+    Respons sukses:
+
+    ```json
+    {
+      "text": "Deskripsi hasil generate...",
+      "usage": {
+        "inputTokens": 20,
+        "outputTokens": 120
+      }
+    }
+    ```
+
+    Respons umum:
+
+    | Status | Kapan terjadi |
+    | --- | --- |
+    | `400` | `prompt` tidak dikirim |
+    | `401` | User belum login |
+    | `429` | Rate limit request atau monthly usage limit tercapai |
+    | `503` | Provider AI belum dikonfigurasi |
+  </Accordion>
+</AccordionGroup>
+
+## Endpoint webhook provider
+
+<AccordionGroup>
+  <Accordion title="POST /api/webhooks/midtrans">
+    Gunakan endpoint ini sebagai callback dari Midtrans, bukan dari browser user.
+
+    Yang diverifikasi:
+
+    - `order_id`
+    - `status_code`
+    - `gross_amount`
+    - `signature_key`
+    - `transaction_status`
+
+    Perilaku penting:
+
+    - signature invalid menghasilkan `401`,
+    - payload invalid menghasilkan `400`,
+    - payment record tidak ditemukan menghasilkan `404`,
+    - duplicate event bisa mengembalikan `{ "received": true, "duplicate": true }`,
+    - event valid akan memperbarui `payments`, bisa mengaktifkan `subscriptions`, lalu menulis `webhook_events` dan `audit_logs`.
+  </Accordion>
+  <Accordion title="POST /api/webhooks/doku">
+    Gunakan endpoint ini sebagai callback dari Doku JOKUL, bukan dari browser user.
+
+    Yang diverifikasi:
+
+    - `order.invoice_number`
+    - `order.amount`
+    - `transaction.status`
+    - `transaction.original_request_id`
+    - `security.check_word`
+
+    Perilaku penting:
+
+    - signature invalid menghasilkan `401`,
+    - payload invalid menghasilkan `400`,
+    - payment record tidak ditemukan menghasilkan `404`,
+    - duplicate event bisa diidentifikasi lewat `webhook_events`,
+    - event valid memperbarui `payments`, bisa mengaktifkan `subscriptions`, lalu menulis audit trail.
+  </Accordion>
+</AccordionGroup>
+
+<Note>
+Route `/auth/confirm` adalah callback auth, bukan endpoint `/api`. Untuk memahami perannya dalam login, OTP, dan OAuth flow, baca [Flow end-to-end](/kilatkoding/end-to-end-flows).
+</Note>

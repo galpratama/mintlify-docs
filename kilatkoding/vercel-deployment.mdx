@@ -1,0 +1,116 @@
+---
+title: "Deployment Vercel"
+description: "Deploy KilatKoding ke Vercel dengan langkah env, callback auth, webhook payment, dan checklist validasi sesudah live."
+mode: "wide"
+---
+
+## Kenapa Vercel jadi jalur paling natural
+
+KilatKoding memakai Next.js App Router tanpa kebutuhan server custom. Karena itu, Vercel biasanya jadi jalur deploy paling cepat, terutama kalau kamu ingin preview deployment, custom domain, dan env management yang rapi.
+
+## Sebelum mulai
+
+Pastikan hal-hal ini sudah siap:
+
+- repo bisa di-build secara lokal,
+- `npm run env:check` sudah sesuai untuk fitur yang aktif,
+- domain production sudah dipilih,
+- akun provider seperti Supabase, Midtrans, Doku, Resend, dan AI provider sudah siap bila dipakai.
+
+## Langkah deploy
+
+<Steps>
+  <Step title="Buat project di Vercel">
+    Import repo KilatKoding ke Vercel. Secara default, command build dan output Next.js biasanya sudah dikenali otomatis.
+  </Step>
+  <Step title="Isi environment variables">
+    Salin env yang relevan dari `.env.local` atau environment secure lain ke Vercel. Fokus ke fitur yang memang aktif.
+  </Step>
+  <Step title="Set NEXT_PUBLIC_APP_URL ke domain production">
+    Jangan biarkan tetap `http://localhost:3000`. Nilai ini dipakai untuk metadata, callback, dan order URL.
+  </Step>
+  <Step title="Deploy pertama">
+    Jalankan deploy lalu pastikan build lolos.
+  </Step>
+  <Step title="Hubungkan domain production">
+    Setelah domain aktif, lakukan deploy ulang bila perlu agar URL live benar-benar konsisten.
+  </Step>
+</Steps>
+
+## Env yang paling sering dibutuhkan
+
+| Kelompok | Env inti |
+| --- | --- |
+| Supabase | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY` |
+| App URL | `NEXT_PUBLIC_APP_URL` |
+| Payments Midtrans | `PAYMENT_PROVIDER=midtrans`, `MIDTRANS_SERVER_KEY`, `NEXT_PUBLIC_MIDTRANS_CLIENT_KEY` |
+| Payments Doku | `PAYMENT_PROVIDER=doku`, `DOKU_CLIENT_ID`, `DOKU_SECRET_KEY` |
+| Email | `RESEND_API_KEY`, `EMAIL_FROM`, opsional `CONTACT_EMAIL` |
+| Admin | `ADMIN_EMAILS` |
+| AI | `AI_DEFAULT_PROVIDER`, `OPENAI_API_KEY` atau `ANTHROPIC_API_KEY` |
+
+## Sesudah deploy, jangan lupa provider-side config
+
+<AccordionGroup>
+  <Accordion title="Supabase">
+    Tambahkan URL production ini ke redirect configuration:
+
+    ```text
+    https://domain-kamu.com/auth/confirm
+    https://domain-kamu.com/auth/update-password
+    ```
+  </Accordion>
+  <Accordion title="Midtrans">
+    Daftarkan webhook production:
+
+    ```text
+    https://domain-kamu.com/api/webhooks/midtrans
+    ```
+
+    Pastikan return URL user tetap mengarah ke order page produkmu.
+  </Accordion>
+  <Accordion title="Doku">
+    Daftarkan webhook production:
+
+    ```text
+    https://domain-kamu.com/api/webhooks/doku
+    ```
+  </Accordion>
+  <Accordion title="Resend">
+    Verifikasi domain sender dan pastikan `EMAIL_FROM` memakai domain yang sudah diverifikasi.
+  </Accordion>
+</AccordionGroup>
+
+## Validasi sesudah live
+
+Minimal cek:
+
+1. homepage bisa dibuka,
+2. login dan signup bekerja,
+3. `/dashboard` bisa dibuka oleh user login,
+4. `/dashboard/billing` bekerja kalau payments aktif,
+5. `/admin` bisa diakses admin kalau admin aktif,
+6. `GET /api/health` sesuai ekspektasi,
+7. satu test payment sandbox dan satu webhook test berhasil kalau payments aktif.
+
+## Gotcha yang paling sering terjadi
+
+| Masalah | Biasanya penyebabnya |
+| --- | --- |
+| Auth callback gagal | redirect URL Supabase belum memakai domain production |
+| Checkout selesai tetapi subscription belum aktif | webhook provider masih menunjuk ke domain lama atau signature gagal |
+| Contact form tidak mengirim | sender Resend belum diverifikasi |
+| Health check degraded | ada env fitur aktif yang belum lengkap |
+| Order page memakai URL localhost | `NEXT_PUBLIC_APP_URL` belum diperbarui |
+
+## Preview deployment vs production
+
+Preview deployment bagus untuk review UI, tetapi:
+
+- jangan jadikan preview URL sebagai callback auth final,
+- jangan jadikan preview URL sebagai webhook provider final,
+- pakai preview untuk layout dan copy review, bukan sebagai integration endpoint permanen.
+
+<Tip>
+Sesudah deploy, lanjutkan ke [Testing dan deployment](/kilatkoding/testing-and-deployment) dan [Resep testing](/kilatkoding/testing-recipes) untuk post-launch verification yang lebih lengkap.
+</Tip>

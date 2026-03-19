@@ -1,0 +1,110 @@
+---
+title: "Database and storage"
+description: "Learn the migrations, main tables, avatar storage, audit logs, webhook ledger, and persistent rate limiting used by KilatKoding."
+mode: "wide"
+---
+
+## Summary
+
+KilatKoding stores its main application state in Supabase PostgreSQL. In addition to user-facing tables such as profiles, subscriptions, and payments, the repository already includes operational tables for webhook events, audit logs, and persistent rate limits.
+
+## Available migrations
+
+| File | Creates or adds |
+| --- | --- |
+| `20260316000001_create_profiles.sql` | `profiles` table and auto-create profile trigger |
+| `20260316000002_create_subscriptions.sql` | `subscriptions` table and default FREE tier trigger |
+| `20260316000003_create_payments.sql` | `payments` table and payment enums |
+| `20260316000004_create_waitlist.sql` | `waitlist` table |
+| `20260316000005_create_ai_usage.sql` | `ai_usage` table |
+| `20260317000006_add_admin_roles_and_billing_hardening.sql` | `user_roles`, billing metadata, indexes, and admin RPCs |
+| `20260317000007_add_avatar_storage.sql` | profile avatar columns and the `avatars` storage bucket |
+| `20260317000008_add_webhook_events.sql` | `webhook_events` and an idempotent claim RPC |
+| `20260317000009_add_persistent_rate_limits.sql` | `rate_limit_buckets` and a persistent consume RPC |
+| `20260317000010_add_audit_logs.sql` | `audit_logs` |
+
+## The most important tables
+
+| Table | Purpose |
+| --- | --- |
+| `profiles` | Full name, avatar fields, and profile metadata |
+| `subscriptions` | Active plan, status, current billing period, and cancel flags |
+| `payments` | Payment history and gateway metadata |
+| `waitlist` | Waitlist signups |
+| `ai_usage` | AI token usage tracking |
+| `user_roles` | Application roles such as `admin` and `member` |
+| `webhook_events` | Webhook event ledger |
+| `rate_limit_buckets` | Persistent rate-limit storage |
+| `audit_logs` | Operational change history |
+
+## Source of truth for access control
+
+The source of truth for admin access is the `user_roles` table, not `ADMIN_EMAILS`.
+
+`ADMIN_EMAILS` is only used as a bootstrap list so certain email addresses can be upserted into the admin role the first time they sign in.
+
+## Avatar storage
+
+The repository uses the `avatars` bucket in Supabase Storage.
+
+### Important rules
+
+- maximum avatar size: 2 MB
+- supported file types: `image/jpeg`, `image/png`, `image/webp`, `image/gif`
+- object path: `${userId}/avatar`
+- avatar URLs are signed and short-lived
+
+## Webhook ledger
+
+The `webhook_events` table is used to:
+
+- prevent duplicate processing,
+- store raw event payloads,
+- record `processed` or `failed` status,
+- support debugging from the admin dashboard.
+
+## Audit logs
+
+The `audit_logs` table records events such as:
+
+- profile changes,
+- admin actions,
+- successful or failed payments,
+- subscription changes.
+
+This is important for both day-to-day operations and investigations.
+
+## Persistent rate limits
+
+If `SUPABASE_SERVICE_ROLE_KEY` is available, KilatKoding uses Supabase for persistent rate limiting on:
+
+- the contact form,
+- waitlist signups,
+- payment creation,
+- AI routes.
+
+If that env value is missing, the repository falls back to an in-memory rate limiter. That is acceptable for local development, but not ideal for multi-instance production deployments.
+
+## How to apply migrations
+
+```bash
+npx supabase db push
+```
+
+If you are not using the Supabase CLI, you can paste the SQL files into the Supabase SQL editor in order.
+
+## How to regenerate database types
+
+```bash
+npx supabase gen types typescript --project-id YOUR_PROJECT_ID > types/database.ts
+```
+
+Do this after your live migrations are fully aligned with the repository schema.
+
+<Tip>
+If billing, admin, avatar, or webhook behavior feels inconsistent, first check whether every migration has actually been applied to your Supabase project.
+</Tip>
+
+<Note>
+If you want a faster-read relationship overview instead of reading migrations one by one, open [Database map](/en/kilatkoding/database-map).
+</Note>

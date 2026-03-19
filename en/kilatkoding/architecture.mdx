@@ -1,0 +1,109 @@
+---
+title: "Architecture"
+description: "Understand the folder structure, rendering model, and the main auth, billing, webhook, and data-access flows in KilatKoding."
+mode: "wide"
+---
+
+## Top-level structure
+
+| Path | Purpose |
+| --- | --- |
+| `app/` | App Router routes, layouts, and API routes |
+| `components/` | Reusable application components |
+| `components/ui/` | shadcn/ui primitives |
+| `config/` | Central config for site, navigation, pricing, design presets, roadmap, status, and open startup |
+| `content/blog/` | MDX blog posts |
+| `emails/` | React Email templates |
+| `hooks/` | Client hooks such as auth, payment, subscription, and AI chat |
+| `lib/` | Shared helpers, integrations, SEO, validations, and rate limiting |
+| `lib/data/` | Data access layer for profiles, payments, subscriptions, admin, audit logs, and webhook events |
+| `lib/payments/` | Midtrans and Doku integrations |
+| `lib/ai/` | AI provider, middleware, and usage tracking |
+| `lib/storage/` | Avatar storage helpers |
+| `supabase/migrations/` | SQL migrations |
+| `tests/` | Unit, DOM, and route tests |
+| `e2e/` | Playwright smoke tests |
+
+## How the app is divided
+
+### Route groups
+
+- `app/(marketing)/` for public pages
+- `app/(dashboard)/` for logged-in user areas
+- `app/auth/` for authentication flows
+
+Route groups use parentheses, so the folder names do not appear in the URL.
+
+## Rendering model
+
+- Server components are the default.
+- Client components are used for interactive forms, theme switching, design switching, charts, and browser-only hooks.
+- The browser Supabase client is created in `lib/supabase/client.ts`.
+- The server Supabase client is created per request in `lib/supabase/server.ts`.
+
+## Auth flow
+
+1. The user opens an auth page.
+2. The client form calls Supabase auth APIs.
+3. `proxy.ts` and `lib/supabase/proxy.ts` refresh session cookies on later requests.
+4. Protected routes such as `/dashboard` and `/admin` check whether the user is signed in.
+5. `/admin` also checks the `admin` role from `user_roles`.
+
+## Billing and payment flow
+
+1. The user picks a plan from the billing UI.
+2. The client calls `POST /api/payments`.
+3. The server reads the price from `config/subscriptions.ts`.
+4. The server inserts a `payments` record with `PENDING` status.
+5. The server returns either a Midtrans Snap token or a Doku checkout URL.
+6. The payment provider sends events to the matching webhook route.
+7. The webhook route verifies the signature, records the event, and activates the subscription on successful payment.
+
+## Retry-safe webhook flow
+
+Midtrans and Doku webhooks do not write state without protections. The repository uses:
+
+- the `webhook_events` table,
+- an idempotent claim RPC,
+- `processed` or `failed` statuses,
+- audit logs for traceability.
+
+That means provider retries do not automatically create duplicate side effects.
+
+## Profile and avatar flow
+
+1. The user requests a signed upload URL from `POST /api/profile/avatar`.
+2. The file is uploaded into the `avatars` bucket.
+3. The user saves avatar references through `POST /api/profile`.
+4. If the user replaces an avatar, the old object is cleaned up.
+
+## Data access layer
+
+The repository does not place every query directly inside route files. Much of the access logic is split into `lib/data/*`, such as:
+
+- `payments.ts`
+- `subscriptions.ts`
+- `profiles.ts`
+- `admin.ts`
+- `audit-logs.ts`
+- `webhook-events.ts`
+- `user-roles.ts`
+
+This keeps business logic more testable and separates it from the HTTP layer.
+
+## Rate limiting
+
+Public forms, payments, and AI use `lib/rate-limit.ts`.
+
+- If `SUPABASE_SERVICE_ROLE_KEY` is available, the repository uses a persistent Supabase-backed rate-limit store.
+- If not, it falls back to an in-memory local store.
+- Responses include `X-RateLimit-*` headers.
+
+## When this page is most useful
+
+This page matters most when you:
+
+- want to refactor folders,
+- want to add a new route,
+- need to understand why auth session cookies stay synchronized,
+- need to debug billing or webhook behavior.

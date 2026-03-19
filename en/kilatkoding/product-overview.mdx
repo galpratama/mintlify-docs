@@ -1,0 +1,90 @@
+---
+title: "Product overview"
+description: "Understand what KilatKoding includes, who it fits, and which areas are still on the roadmap."
+mode: "wide"
+---
+
+## KilatKoding in one sentence
+
+KilatKoding gives you a Next.js SaaS foundation that is already shaped for the Indonesian market, so you can focus on business logic and product branding instead of platform plumbing.
+
+## The problem it solves
+
+Without a boilerplate, you usually need to assemble auth, dashboard, billing, local payment gateways, email, blog, admin, and testing from scratch. KilatKoding brings those areas together in one repository.
+
+## What you get
+
+| Area | Already included | What that means for you |
+| --- | --- | --- |
+| Marketing website | Landing page, about, use cases, compare, changelog, roadmap, status, contact, waitlist, open startup | You can market the product immediately without building the site first |
+| Auth | Login, signup, Google OAuth, Magic Link, email verification, forgot password, update password | Users can create accounts and sign in through multiple flows |
+| Dashboard | Account summary, subscription card, payment history, settings, avatar | Users already have a working product area |
+| Billing | Plan catalog, checkout, cancel or resume subscription, order page, provider callback fallback | You do not need to design billing from scratch |
+| Payments | Midtrans Snap and Doku JOKUL, plus webhook verification | The payment stack already fits the Indonesian market |
+| Admin | Revenue chart, user management, role management, webhook visibility, audit trail | You already have an internal operations panel |
+| Email | Welcome and invoice templates with React Email and Resend | Transactional email is ready from day one |
+| Content | MDX blog and legal pages | You can publish marketing and educational content quickly |
+| AI | `/api/ai/chat`, `/api/ai/generate`, usage tracking, token limits by plan | You can add AI product features without building the foundation first |
+| UI | Tailwind, shadcn/ui, theme switcher, marketing design presets, public component docs | UI work moves faster and stays more consistent |
+| Quality | ESLint, typecheck, unit tests, DOM tests, E2E smoke tests, CI | Regressions are easier to catch |
+
+## Who KilatKoding fits best
+
+- founders who want to validate a SaaS idea faster
+- developers who want an internal starter kit they can reuse or resell
+- agencies that need a repeatable foundation across multiple clients
+- small teams that want to focus on core product features instead of infrastructure
+
+## Where the fit is strongest
+
+KilatKoding tends to be most valuable when:
+
+- you want to sell a product with user accounts, a dashboard, and recurring subscriptions,
+- you want to launch with a landing page, waitlist, blog, roadmap, and status page from day one,
+- you need a lightweight admin panel for daily operations,
+- you want to add AI features without building auth checks, rate limits, and usage tracking from scratch.
+
+## Where custom work becomes heavier
+
+KilatKoding can still be useful, but the custom layer is usually larger when:
+
+- your product needs team or multi-tenant support as a first-class feature on day one,
+- you need detailed usage-based billing instead of a simpler monthly plan model,
+- you are building a multi-seller marketplace with payouts, escrow, or settlement logic,
+- a companion mobile app is a core requirement from the beginning.
+
+<Note>
+If you are still deciding whether the fit is right for a specific product type, read [KilatKoding use cases](/en/kilatkoding/use-cases). That page maps real-world scenarios to feature choices, service setup, and expected customization work.
+</Note>
+
+## What is not included yet
+
+Some items are still roadmap entries in the codebase as of March 19, 2026:
+
+| Area | Status as of March 19, 2026 |
+| --- | --- |
+| Team or multi-tenant support | Not available as a finished feature yet |
+| API keys management | Still a roadmap item |
+| Notification center | Still a roadmap item |
+| Referral program | Still a roadmap item |
+| WhatsApp OTP | Still a roadmap item |
+| Companion mobile starter | Still a roadmap item |
+| Additional email providers besides Resend | Still a roadmap item |
+
+## Decisions you should make early
+
+1. Will you use every module, or disable some through feature toggles?
+2. Which payment provider will be primary: `midtrans` or `doku`?
+3. Do you want AI features from the beginning?
+4. Which email should become the first bootstrap admin account?
+
+## Also useful for non-technical readers
+
+If you are not a developer, focus on these questions:
+
+- Which pages and product areas are already ready for users?
+- Which third-party services need to be registered?
+- Which features can be turned off safely?
+- Which areas must be replaced so the product matches your brand?
+
+This documentation answers those questions directly.

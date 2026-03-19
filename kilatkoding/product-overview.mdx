@@ -1,30 +1,30 @@
 ---
 title: "Ringkasan produk"
-description: "Pahami apa yang Anda dapatkan dari KilatKoding, siapa yang cocok memakainya, dan area yang masih berupa roadmap."
+description: "Pahami apa yang kamu dapatkan dari KilatKoding, siapa yang cocok memakainya, dan area yang masih berupa roadmap."
 mode: "wide"
 ---
 
 ## KilatKoding dalam satu kalimat
 
-KilatKoding memberi Anda fondasi SaaS Next.js yang sudah siap untuk pasar Indonesia, sehingga Anda bisa fokus ke logika bisnis dan branding produk Anda.
+KilatKoding memberi kamu fondasi SaaS Next.js yang sudah siap untuk pasar Indonesia, sehingga kamu bisa fokus ke logika bisnis dan branding produk kamu.
 
 ## Masalah yang diselesaikan
 
-Tanpa boilerplate, Anda biasanya harus menyiapkan auth, dashboard, billing, payment gateway lokal, email, blog, admin, dan testing dari nol. KilatKoding sudah menyatukan area-area itu dalam satu repo.
+Tanpa boilerplate, kamu biasanya harus menyiapkan auth, dashboard, billing, payment gateway lokal, email, blog, admin, dan testing dari nol. KilatKoding sudah menyatukan area-area itu dalam satu repo.
 
-## Yang Anda dapatkan
+## Yang kamu dapatkan
 
 | Area | Sudah tersedia | Nilai untuk pengguna |
 | --- | --- | --- |
-| Marketing website | Landing page, about, use cases, compare, changelog, roadmap, status, contact, waitlist, open startup | Anda bisa langsung memasarkan produk tanpa membangun situs dari nol |
+| Marketing website | Landing page, about, use cases, compare, changelog, roadmap, status, contact, waitlist, open startup | Kamu bisa langsung memasarkan produk tanpa membangun situs dari nol |
 | Auth | Login, signup, Google OAuth, Magic Link, email verification, forgot password, update password | Pengguna bisa membuat akun dan masuk dengan beberapa cara |
 | Dashboard | Ringkasan akun, subscription card, riwayat pembayaran, settings, avatar | User punya area kerja yang sudah siap pakai |
-| Billing | Plan catalog, checkout, cancel/resume subscription, order page, provider callback fallback | Anda tidak perlu merancang alur billing dari nol |
+| Billing | Plan catalog, checkout, cancel/resume subscription, order page, provider callback fallback | Kamu tidak perlu merancang alur billing dari nol |
 | Payments | Midtrans Snap dan Doku JOKUL, plus webhook verification | Cocok untuk pasar Indonesia |
-| Admin | Revenue chart, user management, role management, webhook visibility, audit trail | Anda punya panel operasional internal |
-| Email | Template welcome dan invoice dengan React Email + Resend | Anda bisa mengirim email transaksional sejak awal |
-| Content | Blog MDX dan halaman legal | Anda bisa menulis konten marketing dan edukasi |
-| AI | `/api/ai/chat`, `/api/ai/generate`, usage tracking, token limits by plan | Anda bisa menambah fitur AI tanpa fondasi tambahan |
+| Admin | Revenue chart, user management, role management, webhook visibility, audit trail | Kamu punya panel operasional internal |
+| Email | Template welcome dan invoice dengan React Email + Resend | Kamu bisa mengirim email transaksional sejak awal |
+| Content | Blog MDX dan halaman legal | Kamu bisa menulis konten marketing dan edukasi |
+| AI | `/api/ai/chat`, `/api/ai/generate`, usage tracking, token limits by plan | Kamu bisa menambah fitur AI tanpa fondasi tambahan |
 | UI | Tailwind, shadcn/ui, theme switcher, marketing design presets, public component docs | Pengembangan UI lebih cepat dan konsisten |
 | Quality | ESLint, typecheck, unit test, DOM test, E2E smoke test, CI | Risiko regresi lebih rendah |
 
@@ -34,6 +34,28 @@ Tanpa boilerplate, Anda biasanya harus menyiapkan auth, dashboard, billing, paym
 - Developer yang ingin menjual template internal atau starter kit.
 - Agency yang perlu fondasi reusable untuk banyak klien.
 - Tim kecil yang ingin fokus ke fitur inti, bukan plumbing.
+
+## Kapan fit-nya paling tinggi
+
+KilatKoding biasanya paling terasa manfaatnya kalau:
+
+- kamu ingin menjual produk dengan akun user, dashboard, dan subscription bulanan,
+- kamu ingin launch dengan landing page, waitlist, blog, roadmap, dan status page sejak awal,
+- kamu butuh panel admin sederhana untuk operasional harian,
+- kamu ingin menambahkan fitur AI tanpa menulis auth check, rate limit, dan usage tracking dari nol.
+
+## Kapan custom work akan terasa lebih besar
+
+KilatKoding tetap bisa dipakai, tetapi effort custom biasanya lebih besar kalau:
+
+- produkmu butuh team atau multi-tenant sebagai fitur inti sejak hari pertama,
+- kamu butuh usage-based billing yang benar-benar detail, bukan plan bulanan sederhana,
+- kamu membangun marketplace multi-seller dengan payout, escrow, atau settlement yang kompleks,
+- kamu butuh mobile companion yang benar-benar jadi bagian inti produk dari awal.
+
+<Note>
+Kalau kamu masih menimbang kecocokan untuk jenis produk tertentu, baca [Use case KilatKoding](/kilatkoding/use-cases). Halaman itu merangkum skenario nyata, fitur yang sebaiknya aktif, dan area yang biasanya tetap perlu kamu custom.
+</Note>
 
 ## Apa yang masih belum ada
 
@@ -49,20 +71,20 @@ Beberapa item masih tercatat sebagai roadmap di kode saat ini:
 | Companion mobile starter | Masih roadmap |
 | Provider email tambahan selain Resend | Masih roadmap |
 
-## Keputusan utama yang perlu Anda buat di awal
+## Keputusan utama yang perlu kamu buat di awal
 
-1. Apakah Anda akan memakai semua fitur, atau mematikan beberapa fitur lewat toggle env.
-2. Payment provider utama Anda: `midtrans` atau `doku`.
-3. Apakah produk Anda butuh AI sejak awal.
+1. Apakah kamu akan memakai semua fitur, atau mematikan beberapa fitur lewat toggle env.
+2. Payment provider utama kamu: `midtrans` atau `doku`.
+3. Apakah produk kamu butuh AI sejak awal.
 4. Siapa email admin bootstrap pertama untuk panel admin.
 
 ## Cocok juga untuk pembaca non-teknis
 
-Kalau Anda bukan developer, fokuslah pada empat pertanyaan ini:
+Kalau kamu bukan developer, fokuslah pada empat pertanyaan ini:
 
 - Halaman apa saja yang sudah siap dipakai user?
 - Layanan pihak ketiga apa saja yang harus didaftarkan?
 - Fitur apa saja yang bisa dimatikan?
-- Area mana yang harus diganti agar sesuai brand Anda?
+- Area mana yang harus diganti agar sesuai brand kamu?
 
 Semua pertanyaan itu dijawab di dokumentasi ini.

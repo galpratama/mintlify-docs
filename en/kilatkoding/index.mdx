@@ -1,0 +1,173 @@
+---
+title: "KilatKoding"
+description: "Main guide to understand, run, and customize the KilatKoding boilerplate."
+---
+
+<Info>
+This is the main entry point for KilatKoding documentation. It is written for two audiences: non-technical readers who want to understand what is already included, and developers who will run or modify the code.
+</Info>
+
+## What KilatKoding is
+
+KilatKoding is a Next.js SaaS boilerplate built for the Indonesian market. You do not start from a blank app. You start from a codebase that already includes a landing page, auth, dashboard, billing, admin, email, blog, AI, and testing.
+
+This documentation reflects the `kilatkoding-src` repository as of March 19, 2026.
+
+## Choose the right reading path
+
+If you are opening this docs site with a specific goal, start with the path that best matches your role.
+
+### For founders or non-technical operators
+
+1. [Product overview](/en/kilatkoding/product-overview)
+2. [KilatKoding use cases](/en/kilatkoding/use-cases)
+3. [What you can do without code vs what needs a developer](/en/kilatkoding/no-code-vs-developer)
+4. [Launch checklists](/en/kilatkoding/launch-checklists)
+
+### For developers who want a fast setup path
+
+1. [Getting started](/en/kilatkoding/getting-started)
+2. [Local setup](/en/kilatkoding/local-setup)
+3. [Services setup](/en/kilatkoding/services-setup)
+4. [Environment variables](/en/kilatkoding/environment-variables)
+5. [Vercel deployment](/en/kilatkoding/vercel-deployment)
+
+### For agencies or freelancers who want to rebrand it
+
+1. [KilatKoding use cases](/en/kilatkoding/use-cases)
+2. [Customization](/en/kilatkoding/customization)
+3. [Rebranding recipes](/en/kilatkoding/rebranding-recipes)
+4. [Feature toggle matrix](/en/kilatkoding/feature-toggle-matrix)
+5. [End-to-end flows](/en/kilatkoding/end-to-end-flows)
+
+### For technical audits or handovers
+
+1. [Features and routes](/en/kilatkoding/features-and-routes)
+2. [Architecture](/en/kilatkoding/architecture)
+3. [API reference](/en/kilatkoding/api-reference)
+4. [Database map](/en/kilatkoding/database-map)
+5. [Operational runbook](/en/kilatkoding/operational-runbook)
+
+## Start with the core pages
+
+<Columns cols={2}>
+  <Card title="Understand the product" href="/en/kilatkoding/product-overview">
+    See what is already included, who it fits, and which areas are still roadmap items.
+  </Card>
+  <Card title="Choose a use case" href="/en/kilatkoding/use-cases">
+    Match KilatKoding to scenarios such as subscription SaaS, client portals, pre-launch waitlists, or AI products.
+  </Card>
+  <Card title="Define ownership" href="/en/kilatkoding/no-code-vs-developer">
+    See which areas are safe to manage without code and which areas still need a developer.
+  </Card>
+  <Card title="Plan your setup" href="/en/kilatkoding/getting-started">
+    Decide which services and feature modules you want to enable before editing configuration.
+  </Card>
+  <Card title="Run it locally" href="/en/kilatkoding/local-setup">
+    Follow the local setup steps for Windows, macOS, or Linux.
+  </Card>
+  <Card title="Adapt it to your brand" href="/en/kilatkoding/customization">
+    Change product naming, navigation, pricing, pages, design presets, email, and content.
+  </Card>
+</Columns>
+
+## Additional docs that matter before launch
+
+These pages usually become important once the project moves into implementation, QA, or launch prep.
+
+<Columns cols={2}>
+  <Card title="Launch checklists" href="/en/kilatkoding/launch-checklists">
+    Use different checklists for waitlists, subscription SaaS, AI SaaS, or client portals before going live.
+  </Card>
+  <Card title="Services setup" href="/en/kilatkoding/services-setup">
+    Connect Supabase, Resend, Midtrans, Doku, and AI services based on the combination you need.
+  </Card>
+  <Card title="Environment variables" href="/en/kilatkoding/environment-variables">
+    Review required env vars, optional env vars, and safe toggle combinations.
+  </Card>
+  <Card title="Vercel deployment" href="/en/kilatkoding/vercel-deployment">
+    Follow the production deployment flow, fill env vars in Vercel, and run post-deploy checks.
+  </Card>
+  <Card title="Testing recipes" href="/en/kilatkoding/testing-recipes">
+    Run manual test scenarios for auth, payments, webhooks, waitlists, and AI features.
+  </Card>
+  <Card title="Operational runbook" href="/en/kilatkoding/operational-runbook">
+    See what to check when emails fail, webhooks do not arrive, or subscriptions do not activate.
+  </Card>
+</Columns>
+
+## Docs for changing the product with less guesswork
+
+<Columns cols={2}>
+  <Card title="Rebranding recipes" href="/en/kilatkoding/rebranding-recipes">
+    Follow goal-based tutorials such as renaming the product, disabling AI, or turning the landing page into an agency site.
+  </Card>
+  <Card title="Feature toggle matrix" href="/en/kilatkoding/feature-toggle-matrix">
+    See the effect of each toggle on the UI, routes, env vars, and service setup before disabling features.
+  </Card>
+  <Card title="End-to-end flows" href="/en/kilatkoding/end-to-end-flows">
+    Understand auth, checkout, payment webhook, avatar upload, and AI usage flows from a product perspective.
+  </Card>
+  <Card title="Components and UI" href="/en/kilatkoding/components-and-ui">
+    Review the component structure, layout patterns, and UI areas that are most often changed during rebranding.
+  </Card>
+  <Card title="AI and tooling" href="/en/kilatkoding/ai-and-tooling">
+    Check the AI surface area, provider integration, and tooling touchpoints you should review before custom work.
+  </Card>
+</Columns>
+
+## Technical and operational reference
+
+If you are auditing the codebase, handing it over to another developer, or need more technical answers, start here.
+
+<Columns cols={2}>
+  <Card title="Features and routes" href="/en/kilatkoding/features-and-routes">
+    Get a map of the existing pages, key routes, and modules already included in the boilerplate.
+  </Card>
+  <Card title="Architecture" href="/en/kilatkoding/architecture">
+    Review the folder structure, boundaries between layers, and main implementation patterns in the app.
+  </Card>
+  <Card title="API reference" href="/en/kilatkoding/api-reference">
+    Check important endpoints, auth requirements, request shapes, response shapes, and common error cases.
+  </Card>
+  <Card title="Database and storage" href="/en/kilatkoding/database-and-storage">
+    Understand how Supabase is used for auth, primary data, avatars, and storage.
+  </Card>
+  <Card title="Database map" href="/en/kilatkoding/database-map">
+    Learn the main tables, relationships, and database areas most often touched during customization.
+  </Card>
+  <Card title="Glossary" href="/en/kilatkoding/glossary">
+    Read friendly definitions for terms such as webhook, service role, RLS, migration, and rate limit.
+  </Card>
+  <Card title="Current limitations" href="/en/kilatkoding/limitations">
+    Review areas that are not automatically ready for every use case so expectations stay realistic.
+  </Card>
+  <Card title="Testing and deployment" href="/en/kilatkoding/testing-and-deployment">
+    Get the higher-level view of testing workflow, CI, and release setup already present in the repo.
+  </Card>
+  <Card title="Troubleshooting" href="/en/kilatkoding/troubleshooting">
+    Find quick fixes for setup errors, incorrect env configuration, or service integrations that do not work yet.
+  </Card>
+</Columns>
+
+## Who this documentation is for
+
+- founders or non-technical operators who want to understand what is ready to use,
+- developers who need to run the project and decide which features stay enabled,
+- freelancers or agencies who want to rebrand the boilerplate for clients.
+
+## What is already in the repository
+
+- a complete marketing site with supporting pages such as `about`, `compare`, `roadmap`, `status`, `waitlist`, `contact`, `privacy`, and `terms`
+- Supabase auth with email/password, Google OAuth, Magic Link, email verification, and password reset
+- a user dashboard with profile, billing, payment history, and avatar support
+- an admin dashboard with revenue metrics, role management, webhook logs, and audit trail
+- Midtrans and Doku integrations with webhook verification
+- transactional email through Resend and React Email
+- an MDX blog with frontmatter, tags, and reading time
+- AI routes for chat and generate, including usage tracking
+- testing with Vitest, Testing Library, Playwright, and GitHub Actions CI
+
+<Tip>
+If this is your first time opening the docs and you are not sure where to begin, read [Product overview](/en/kilatkoding/product-overview), [KilatKoding use cases](/en/kilatkoding/use-cases), [What you can do without code vs what needs a developer](/en/kilatkoding/no-code-vs-developer), then continue to [Getting started](/en/kilatkoding/getting-started).
+</Tip>

@@ -1,0 +1,154 @@
+---
+title: "Local setup"
+description: "Follow the local setup steps for KilatKoding on Windows, macOS, or Linux."
+---
+
+## Prerequisites
+
+The repository was verified with Node.js `24.4.1` and npm `11.4.2`. In practice, a modern Node version compatible with Next.js 16 should also work, but those versions are the snapshot used by this repository as of March 19, 2026.
+
+You also need:
+
+- Git
+- a code editor such as VS Code
+- access to the repository or a project ZIP
+
+## Install tools by operating system
+
+<AccordionGroup>
+  <Accordion title="Windows">
+    Use PowerShell or the terminal built into VS Code.
+
+    Quick setup with `winget`:
+
+    ```powershell
+    winget install Git.Git
+    winget install OpenJS.NodeJS.LTS
+    ```
+
+    After installation, close and reopen your terminal. Make sure these commands work:
+
+    ```powershell
+    git --version
+    node --version
+    npm --version
+    ```
+  </Accordion>
+  <Accordion title="macOS">
+    If you use Homebrew:
+
+    ```bash
+    brew install git node
+    ```
+
+    Then verify:
+
+    ```bash
+    git --version
+    node --version
+    npm --version
+    ```
+  </Accordion>
+  <Accordion title="Linux">
+    The example below uses Ubuntu or Debian. If you use another distro, switch to the equivalent package manager.
+
+    ```bash
+    sudo apt update
+    sudo apt install -y git nodejs npm
+    ```
+
+    Then verify:
+
+    ```bash
+    git --version
+    node --version
+    npm --version
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Run the project for the first time
+
+<Steps>
+  <Step title="Get the source code">
+    If you have repository access, clone it. If you received a ZIP, extract it into your working directory.
+
+    ```bash
+    git clone <your-repo-url>
+    cd kilatkoding-src
+    ```
+  </Step>
+  <Step title="Install dependencies">
+    Run:
+
+    ```bash
+    npm install
+    ```
+  </Step>
+  <Step title="Create the local environment file">
+    On macOS or Linux:
+
+    ```bash
+    cp .env.example .env.local
+    ```
+
+    On Windows PowerShell:
+
+    ```powershell
+    Copy-Item .env.example .env.local
+    ```
+  </Step>
+  <Step title="Fill `.env.local`">
+    Use [Environment variables](/en/kilatkoding/environment-variables) as the reference for every variable. Do not guess env names. The repository already defines a clear structure.
+  </Step>
+  <Step title="Check readiness">
+    Run:
+
+    ```bash
+    npm run env:check
+    ```
+
+    This command tells you which features are ready, which ones are in fallback mode, and which ones are intentionally disabled.
+  </Step>
+  <Step title="Start the app">
+    Run:
+
+    ```bash
+    npm run dev
+    ```
+
+    Then open `http://localhost:3000`.
+  </Step>
+</Steps>
+
+## If you also want to run E2E tests
+
+Install the Playwright browser once:
+
+```bash
+npx playwright install chromium
+```
+
+Then run:
+
+```bash
+npm run e2e
+```
+
+## Signs that local setup worked
+
+| Check | Expected result |
+| --- | --- |
+| `npm run env:check` | No fatal errors for the features you left enabled |
+| `npm run dev` | The dev server starts without crashing |
+| `http://localhost:3000` | The landing page loads |
+| Login or dashboard | Works if auth is enabled and Supabase is configured correctly |
+
+## Most common local setup issues
+
+- Node is too old or too new for a dependency.
+- `.env.local` does not exist yet.
+- Supabase env is still empty while auth remains enabled.
+- Payments or AI are enabled without the env they require.
+
+If one of those issues shows up, go to [Troubleshooting](/en/kilatkoding/troubleshooting).

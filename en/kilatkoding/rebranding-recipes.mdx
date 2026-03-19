@@ -1,0 +1,110 @@
+---
+title: "Rebranding recipes"
+description: "Follow task-based recipes to turn KilatKoding into a new brand, a client portal, or a narrower product."
+mode: "wide"
+---
+
+<Info>
+This is not just a file inventory. The goal is to give you a more practical work order based on the outcome you want.
+</Info>
+
+## Recipe chooser
+
+| Goal | Start from this file | Usually also review |
+| --- | --- | --- |
+| Replace product identity | `config/site.ts` | logos, metadata images, landing copy |
+| Change pricing and plans | `config/subscriptions.ts` | billing page, pricing section, AI limits |
+| Remove waitlist or contact | `.env`, `config/navigation.ts` | landing page CTA, public menus |
+| Turn it into a member or client portal | `config/navigation.ts` | dashboard sections, settings, role model |
+| Clean up the marketing site | `components/sections/*` | `about`, `compare`, `roadmap`, `status`, `blog` |
+| White-label it for a client | all core config + legal pages | production env, sender email, client domain |
+
+## Recipes by outcome
+
+<AccordionGroup>
+  <Accordion title="Recipe 1: Replace the full product identity">
+    Recommended order:
+
+    1. Update `config/site.ts`.
+    2. Replace the logo, opengraph image, and twitter image.
+    3. Rewrite headline, subheadline, CTA, and FAQ in `components/sections/*`.
+    4. Review `about`, `contact`, `privacy`, and `terms`.
+    5. Make sure important page metadata no longer refers to KilatKoding.
+
+    Final check:
+
+    - the product name is consistent across landing page, dashboard, email, and metadata,
+    - the live URL and sender email match the new brand.
+  </Accordion>
+  <Accordion title="Recipe 2: Turn the boilerplate into a narrower subscription SaaS">
+    This is a good fit when you do not need every built-in marketing page.
+
+    Do this:
+
+    1. Pick the active features through toggles.
+    2. Edit `config/navigation.ts` so only real pages stay visible.
+    3. Replace or remove overly generic pages such as `compare`, `open`, or `roadmap`.
+    4. Adjust `config/subscriptions.ts` to your product plans.
+    5. Test billing end-to-end.
+
+    Desired result:
+
+    - users do not see irrelevant paths,
+    - pricing and benefits feel specific to your product.
+  </Accordion>
+  <Accordion title="Recipe 3: Turn it into a member portal or client area">
+    The main focus:
+
+    - keep auth on,
+    - keep payments optional,
+    - simplify dashboard navigation,
+    - stop the marketing site from over-selling subscriptions if access is not publicly sold.
+
+    Common steps:
+
+    1. Disable payments if they are not needed.
+    2. simplify marketing sections.
+    3. turn the dashboard into a workspace, member portal, or client hub.
+    4. add extra profile fields or domain tables if a developer needs to extend the product model.
+  </Accordion>
+  <Accordion title="Recipe 4: Turn off unused modules without damaging the repo">
+    Safe approach:
+
+    1. Disable the module through `NEXT_PUBLIC_ENABLE_*`.
+    2. Run `npm run env:check`.
+    3. Remove or adjust navigation links.
+    4. Update CTA and copy that still mention the feature.
+    5. Retest the affected pages.
+
+    Do not start by deleting files unless you are sure the change is permanent for the repo.
+  </Accordion>
+  <Accordion title="Recipe 5: White-label delivery for an agency client">
+    Main checklist:
+
+    - all copy and brand assets are replaced,
+    - sender email and contact inbox belong to the client,
+    - the production domain belongs to the client,
+    - auth callbacks and payment webhooks use the client domain,
+    - legal pages and pricing match the client agreement,
+    - roadmap, status, and open startup data do not retain template leftovers.
+
+    Most common misses:
+
+    - `EMAIL_FROM`,
+    - `ADMIN_EMAILS`,
+    - sample blog posts,
+    - metadata preview images,
+    - legal pages.
+  </Accordion>
+</AccordionGroup>
+
+## Rules of thumb while rebranding
+
+- start from config and copy before large refactors,
+- turn features off before deleting them,
+- make sure pricing, email, legal, and navigation change too, not just the hero section,
+- review internal areas such as dashboard and admin, not only public pages.
+
+<Tip>
+If you need a clearer work split between the product owner and the developer during a rebrand, read [No-code vs developer](/en/kilatkoding/no-code-vs-developer).
+</Tip>

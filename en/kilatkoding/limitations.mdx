@@ -1,0 +1,92 @@
+---
+title: "Current limitations"
+description: "Understand the current boundaries, architectural opinions, and roadmap gaps in KilatKoding so implementation expectations stay realistic."
+mode: "wide"
+---
+
+<Warning>
+This page is intentionally direct. The goal is to help your team understand what is already strong, what is opinionated, and what still needs a substantial custom layer.
+</Warning>
+
+## Where KilatKoding is strongest
+
+KilatKoding is currently strongest for:
+
+- web SaaS built on Next.js,
+- baseline auth and dashboard flows,
+- simpler monthly subscription billing,
+- Indonesian local payments through Midtrans or Doku,
+- lightweight internal admin operations,
+- waitlist, contact, blog, roadmap, and marketing pages,
+- basic AI product features with usage tracking and rate limiting.
+
+## Product boundaries you should understand
+
+| Area | Current limitation |
+| --- | --- |
+| Multi-tenant or team workspace | Not available as a finished feature |
+| Payment providers | Focused on Midtrans and Doku |
+| Email provider | Focused on Resend |
+| Mobile app | No ready-to-use companion mobile starter yet |
+| Complex marketplace logic | No split payouts, escrow, or vendor settlement built in |
+| Usage-based billing | Not the primary billing model yet |
+| AI billing model | Currently oriented around monthly token allowance by plan |
+| Notification center | Still roadmap |
+| API keys management | Still roadmap |
+
+## Architectural opinions that affect implementation
+
+KilatKoding currently has several important opinions:
+
+- one user has one active subscription row,
+- the plan catalog is determined server-side from config,
+- admin access relies on `user_roles`, not only env values,
+- payment finalization is determined by webhooks, not by the order-page redirect,
+- persistent rate limiting only becomes fully available when the service role is present,
+- avatars live in the Supabase Storage `avatars` bucket,
+- AI usage is tracked per user and per month.
+
+## What that means for product teams
+
+In practice, that usually means:
+
+- if you need per-seat billing, the schema extension will be significant,
+- if you need another payment provider, you should expect a fresh integration effort,
+- if you need a more advanced AI experience, the base routes exist but the full UX still needs to be built,
+- if you need mobile-first delivery, this web app is a stronger foundation for backend and admin than for the final mobile experience.
+
+## Areas that can look “almost ready” but are not finished products
+
+These areas may feel close, but should not be treated as fully shipped:
+
+- multi-seller marketplace flow,
+- referral program,
+- notification center,
+- team invite and more complex roles,
+- cross-feature usage metering,
+- API key lifecycle management.
+
+## When KilatKoding still makes strong sense
+
+It remains a very strong fit when you mainly want to save time on:
+
+- the marketing site,
+- auth,
+- the baseline dashboard,
+- simpler billing,
+- internal operations,
+- Indonesian local payments,
+- launch speed.
+
+## When you should expect a larger custom layer
+
+Expect more custom work when:
+
+- the product is not close to a classic subscription SaaS shape,
+- the core product model is organization-first or team-first,
+- payment logic is unusually specific,
+- your domain model matters more than the marketing, auth, and admin foundation.
+
+<Tip>
+If you are still evaluating fit before implementation, read [KilatKoding use cases](/en/kilatkoding/use-cases) and [No-code vs developer](/en/kilatkoding/no-code-vs-developer).
+</Tip>

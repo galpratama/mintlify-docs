@@ -91,7 +91,7 @@ Kalau env itu tidak ada, repo fallback ke in-memory rate limit. Cocok untuk loca
 npx supabase db push
 ```
 
-Kalau Anda tidak memakai Supabase CLI, Anda bisa menyalin file SQL ke SQL editor Supabase secara berurutan.
+Kalau kamu tidak memakai Supabase CLI, kamu bisa menyalin file SQL ke SQL editor Supabase secara berurutan.
 
 ## Cara generate ulang type database
 
@@ -99,8 +99,12 @@ Kalau Anda tidak memakai Supabase CLI, Anda bisa menyalin file SQL ke SQL editor
 npx supabase gen types typescript --project-id YOUR_PROJECT_ID > types/database.ts
 ```
 
-Lakukan ini setelah migrasi live Anda benar-benar sudah sesuai.
+Lakukan ini setelah migrasi live kamu benar-benar sudah sesuai.
 
 <Tip>
-Kalau billing, admin, avatar, atau webhook terasa tidak konsisten, cek dulu apakah semua migrasi sudah benar-benar terpasang di project Supabase Anda.
+Kalau billing, admin, avatar, atau webhook terasa tidak konsisten, cek dulu apakah semua migrasi sudah benar-benar terpasang di project Supabase kamu.
 </Tip>
+
+<Note>
+Kalau kamu ingin gambaran relasi tabel yang lebih cepat dibaca daripada daftar migrasi, buka [Peta database](/kilatkoding/database-map).
+</Note>

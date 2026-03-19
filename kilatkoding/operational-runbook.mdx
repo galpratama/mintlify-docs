@@ -1,0 +1,146 @@
+---
+title: "Runbook operasional"
+description: "Gunakan runbook operasional KilatKoding untuk incident auth, billing, webhook, admin, AI, email, dan avatar."
+mode: "wide"
+---
+
+<Info>
+Runbook ini fokus ke apa yang harus dicek terlebih dahulu saat ada incident, bukan ke semua detail implementasi. Tujuannya adalah mempercepat diagnosis dan membagi masalah operasional dari masalah pengembangan fitur.
+</Info>
+
+## Ritual operasional minimum
+
+Sebelum bicara soal incident yang rumit, biasakan tiga pemeriksaan ini:
+
+1. Jalankan `npm run env:check` di environment yang relevan.
+2. Cek `GET /api/health`.
+3. Cocokkan gejala user dengan fitur yang memang aktif di produkmu.
+
+## Incident playbook
+
+<AccordionGroup>
+  <Accordion title="Health check menunjukkan status degraded">
+    Cek dulu:
+
+    - fitur mana yang `enabled` tetapi masih punya `missing_env`,
+    - apakah database check gagal saat admin atau payments aktif,
+    - apakah sebenarnya fitur itu memang sengaja dimatikan dan hanya belum disesuaikan env atau copy-nya.
+
+    Eskalasi ke developer kalau:
+
+    - env sudah benar tetapi database tetap `ok: false`,
+    - status degraded muncul tanpa perubahan konfigurasi yang jelas.
+  </Accordion>
+  <Accordion title="User tidak bisa login atau masuk dashboard">
+    Cek dulu:
+
+    - Supabase public env,
+    - redirect URL auth,
+    - apakah auth memang sengaja dimatikan,
+    - apakah masalah hanya terjadi setelah verify email, OAuth, atau reset password.
+
+    Tempat lihat:
+
+    - halaman `/auth/error`,
+    - route `/auth/confirm`,
+    - dashboard Supabase Auth.
+  </Accordion>
+  <Accordion title="Payment sukses di gateway tetapi subscription belum aktif">
+    Cek dulu:
+
+    - webhook URL provider,
+    - signature verification,
+    - tabel `payments`,
+    - tabel `subscriptions`,
+    - tabel `webhook_events`,
+    - admin audit trail.
+
+    Ini hampir selalu berarti masalah ada di layer webhook, bukan di halaman billing.
+  </Accordion>
+  <Accordion title="Webhook duplicate atau retry terus">
+    Cek dulu:
+
+    - apakah event yang sama sudah tercatat di `webhook_events`,
+    - apakah status terakhir `processing`, `processed`, atau `failed`,
+    - apakah provider sedang mengirim ulang event karena respons server bukan `200`.
+
+    Yang perlu dipahami:
+
+    - repo ini sudah memakai event claim idempotent,
+    - duplicate delivery tidak otomatis berarti duplicate payment.
+  </Accordion>
+  <Accordion title="Contact form tidak mengirim email">
+    Cek dulu:
+
+    - `RESEND_API_KEY`,
+    - `EMAIL_FROM`,
+    - verifikasi domain sender di Resend,
+    - apakah `CONTACT_EMAIL` mengarah ke inbox yang benar,
+    - apakah error yang muncul `429`, `503`, atau `500`.
+
+    Biasanya:
+
+    - `503` berarti fitur belum siap,
+    - `429` berarti rate limit,
+    - `500` berarti gagal di provider email.
+  </Accordion>
+  <Accordion title="Admin panel tidak muncul atau role user salah">
+    Cek dulu:
+
+    - `NEXT_PUBLIC_ENABLE_ADMIN`,
+    - `SUPABASE_SERVICE_ROLE_KEY`,
+    - tabel `user_roles`,
+    - apakah email bootstrap di `ADMIN_EMAILS` sudah pernah login setidaknya sekali.
+
+    Catatan penting:
+
+    - source of truth admin adalah `user_roles`,
+    - `ADMIN_EMAILS` hanya bootstrap awal, bukan kontrol role permanen.
+  </Accordion>
+  <Accordion title="AI route mengembalikan 429 atau 503">
+    Cek dulu:
+
+    - provider key sesuai `AI_DEFAULT_PROVIDER`,
+    - apakah user sedang login,
+    - plan user saat ini,
+    - monthly token usage di `ai_usage`,
+    - rate limit request per 5 menit.
+
+    Interpretasi cepat:
+
+    - `503` biasanya provider belum siap,
+    - `429` bisa berarti request terlalu sering atau quota bulanan habis.
+  </Accordion>
+  <Accordion title="Avatar gagal di-upload atau tidak berubah">
+    Cek dulu:
+
+    - auth user aktif,
+    - ukuran file maksimal 2 MB,
+    - tipe file termasuk format yang diizinkan,
+    - bucket `avatars` dan policy storage sudah ada,
+    - `POST /api/profile/avatar` berhasil mengembalikan signed upload URL.
+  </Accordion>
+</AccordionGroup>
+
+## Kapan incident masih level operasional, bukan bug baru
+
+Sering kali masalah belum tentu bug baru kalau:
+
+- env baru saja berubah,
+- provider dashboard baru saja dipindah ke domain production,
+- fitur baru saja dimatikan atau diaktifkan,
+- copy atau navigasi masih menunjuk ke flow yang sebenarnya tidak aktif.
+
+## Kapan langsung eskalasi ke developer
+
+Libatkan developer lebih cepat kalau:
+
+- build production gagal,
+- database check gagal tanpa perubahan env,
+- webhook gagal konsisten untuk event valid,
+- admin atau profile write rusak meski service role sudah benar,
+- user mengeluhkan data yang tidak sinkron antar tabel.
+
+<Tip>
+Kalau kamu sedang melakukan pengecekan sebelum launch, halaman yang paling cocok dibaca setelah ini adalah [Checklist launch per use case](/kilatkoding/launch-checklists) dan [Troubleshooting](/kilatkoding/troubleshooting).
+</Tip>

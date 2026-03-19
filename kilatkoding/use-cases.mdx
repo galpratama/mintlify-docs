@@ -1,0 +1,93 @@
+---
+title: "Use case KilatKoding"
+description: "Pilih skenario penggunaan KilatKoding yang paling cocok, dari waitlist pre-launch sampai SaaS AI berlangganan."
+mode: "wide"
+---
+
+<Info>
+Halaman ini membantu kamu memetakan KilatKoding ke kebutuhan bisnis yang nyata. Fokusnya bukan teori, tetapi kombinasi fitur, layanan, dan area custom yang biasanya dibutuhkan untuk tiap skenario.
+</Info>
+
+## Pilihan cepat
+
+| Use case | Cocok kalau | Fitur inti yang biasanya dipakai | Layanan minimum | Catatan penting |
+| --- | --- | --- | --- | --- |
+| Waitlist pre-launch | Kamu ingin validasi demand sebelum aplikasi penuh dibuka | Waitlist, contact, blog, roadmap | Supabase, opsional Resend | Auth, payments, admin, dan AI bisa dimatikan dulu |
+| Micro SaaS berlangganan | Kamu menjual software dengan akun user dan billing bulanan | Auth, dashboard, payments, admin | Supabase + Midtrans atau Doku | Jalur paling natural untuk KilatKoding |
+| Portal member atau client | Kamu butuh area login tertutup untuk member, siswa, atau klien | Auth, dashboard, profile | Supabase | Payments dan AI bisa benar-benar opsional |
+| SaaS dengan fitur AI | Nilai utama produk ada di chat, generate, atau workflow AI | Auth, AI, usage tracking, plan limits | Supabase + OpenAI atau Anthropic | Payment provider dibutuhkan kalau fitur AI dijual via subscription |
+| Agency starter atau white-label | Kamu sering membangun project serupa untuk banyak brand | Marketing pages, auth, dashboard, billing opsional | Tergantung kebutuhan klien | Nilai utamanya ada di reusability dan kecepatan rebrand |
+| Marketplace atau platform layanan | Kamu butuh auth, payment, dan admin sebagai fondasi awal | Auth, payments, admin, webhook | Supabase + payment provider | Multi-seller, payout, dan escrow tetap perlu custom besar |
+
+## Detail per skenario
+
+<AccordionGroup>
+  <Accordion title="Micro SaaS atau SaaS B2B berlangganan">
+    - **Cocok untuk:** tools produktivitas, analytics dashboard, invoicing tool, niche SaaS B2B, dan produk internal berbayar.
+    - **Modul yang biasanya aktif:** auth, payments, admin. Contact dan waitlist opsional. AI hanya aktif kalau memang bagian dari nilai produk.
+    - **Layanan minimum:** Supabase plus satu payment provider, yaitu Midtrans atau Doku.
+    - **Halaman dan route yang langsung berguna:** `/`, `/auth/login`, `/dashboard`, `/dashboard/billing`, `/order/[id]`, `POST /api/payments`, dan webhook provider.
+    - **Custom work yang hampir pasti perlu:** domain model produk, onboarding, isi dashboard, copy pricing, dan aturan akses user.
+    - **Baca selanjutnya:** [Mulai dengan benar](/kilatkoding/getting-started), [Setup layanan](/kilatkoding/services-setup), dan [Kustomisasi](/kilatkoding/customization).
+  </Accordion>
+  <Accordion title="Waitlist pre-launch atau validasi MVP">
+    - **Cocok untuk:** ide produk yang belum siap dibuka penuh, pre-launch campaign, atau funnel validasi awal.
+    - **Modul yang biasanya aktif:** waitlist, contact, blog, roadmap, status. Auth, payments, admin, dan AI bisa dimatikan dulu.
+    - **Layanan minimum:** Supabase untuk menyimpan waitlist. Resend hanya dibutuhkan kalau kamu menyalakan contact form.
+    - **Halaman dan route yang langsung berguna:** `/`, `/waitlist`, `/contact`, `/blog`, `/roadmap`, `/status`, dan `POST /api/waitlist`.
+    - **Custom work yang biasanya perlu:** positioning produk, CTA, visual landing page, FAQ, dan segmentasi audience.
+    - **Keuntungan skenario ini:** kamu bisa launch cepat tanpa harus menyelesaikan semua area aplikasi terlebih dahulu.
+  </Accordion>
+  <Accordion title="Portal member, cohort, atau client area">
+    - **Cocok untuk:** member area, dashboard siswa, portal klien agency, knowledge hub privat, atau workspace internal perusahaan.
+    - **Modul yang biasanya aktif:** auth, dashboard, profile. Payments opsional kalau akses dijual. Admin opsional kalau operator perlu panel kontrol internal.
+    - **Layanan minimum:** Supabase.
+    - **Halaman dan route yang langsung berguna:** `/auth/*`, `/dashboard`, `/dashboard/settings`, `POST /api/profile`, dan `POST /api/profile/avatar`.
+    - **Custom work yang hampir pasti perlu:** struktur menu dashboard, field profil tambahan, tabel data domain produk, dan permission yang lebih spesifik.
+    - **Baca selanjutnya:** [Komponen dan UI](/kilatkoding/components-and-ui), [Arsitektur](/kilatkoding/architecture), dan [Database dan storage](/kilatkoding/database-and-storage).
+  </Accordion>
+  <Accordion title="SaaS dengan fitur AI sebagai bagian inti">
+    - **Cocok untuk:** AI writing tool, assistant internal, generator konten, workflow copilot, atau fitur premium berbasis model.
+    - **Modul yang biasanya aktif:** auth, AI, admin. Payments aktif kalau akses AI dijual via subscription.
+    - **Layanan minimum:** Supabase plus OpenAI atau Anthropic.
+    - **Halaman dan route yang langsung berguna:** `POST /api/ai/chat`, `POST /api/ai/generate`, billing dashboard, dan limit token per plan di config subscription.
+    - **Custom work yang hampir pasti perlu:** prompt design, UI chat atau generate, guardrail bisnis, output formatter, dan model choice per use case.
+    - **Catatan penting:** KilatKoding sudah menyiapkan provider selection, usage tracking, dan rate limit dasar, tetapi kualitas pengalaman AI tetap sangat bergantung pada logika produk yang kamu bangun.
+  </Accordion>
+  <Accordion title="Agency starter atau boilerplate untuk banyak klien">
+    - **Cocok untuk:** freelancer atau agency yang sering membuat landing page, auth flow, dashboard, atau subscription service berulang.
+    - **Modul yang biasanya aktif:** marketing pages, auth, dashboard, contact. Payments dan AI tergantung kebutuhan tiap klien.
+    - **Nilai utama:** reusability. Kamu tidak perlu mengulang setup auth, email, payment, blog, dan operasional dasar di setiap proyek.
+    - **Area yang paling sering kamu ubah:** `config/site.ts`, `config/navigation.ts`, `config/subscriptions.ts`, section marketing, halaman legal, dan preset desain marketing.
+    - **Custom work yang hampir pasti perlu:** branding baru, copy baru, domain model klien, dan kadang alur onboarding yang berbeda.
+    - **Baca selanjutnya:** [Kustomisasi](/kilatkoding/customization), [Komponen dan UI](/kilatkoding/components-and-ui), dan [Testing dan deployment](/kilatkoding/testing-and-deployment).
+  </Accordion>
+  <Accordion title="Marketplace atau platform layanan yang lebih kompleks">
+    - **Cocok untuk:** proyek yang tetap ingin memakai auth, payment gateway, admin, dan landing page sebagai fondasi awal.
+    - **Yang sudah membantu:** auth dasar, integrasi payment lokal, webhook verification, admin visibility, audit trail, dan route API awal.
+    - **Yang belum jadi fitur siap pakai:** multi-seller, split payout, escrow, settlement vendor, team workspace, dan rule marketplace yang kompleks.
+    - **Artinya untuk tim kamu:** KilatKoding bisa mempercepat area fondasi, tetapi schema database, operational flow, dan business logic inti tetap perlu dibangun cukup besar.
+    - **Saran:** pakai skenario ini hanya kalau kamu memang ingin menghemat waktu pada layer marketing, auth, billing, dan admin, bukan berharap marketplace-nya sudah jadi out of the box.
+  </Accordion>
+</AccordionGroup>
+
+## Saat KilatKoding belum jadi fit ideal
+
+Pertimbangkan fondasi lain, atau siapkan ekspektasi custom yang lebih besar, kalau:
+
+- team atau multi-tenant adalah kebutuhan utama dari hari pertama,
+- usage-based billing harus sudah matang sejak launch pertama,
+- produkmu lebih dekat ke e-commerce fisik dengan inventori, pengiriman, dan katalog besar,
+- kamu butuh aplikasi mobile-first sebagai deliverable utama, bukan web app terlebih dahulu.
+
+## Cara memilih skenario yang paling aman
+
+1. Mulai dari alur user yang paling penting. Apakah user perlu login, membayar, atau hanya daftar waitlist dulu?
+2. Putuskan apakah pembayaran adalah bagian inti launch pertama atau bisa ditunda.
+3. Putuskan apakah AI adalah fitur inti, add-on, atau belum dibutuhkan sama sekali.
+4. Matikan modul yang belum dipakai lewat `NEXT_PUBLIC_ENABLE_*`, jangan dibiarkan aktif tanpa konfigurasi.
+5. Validasi pilihanmu lewat [Mulai dengan benar](/kilatkoding/getting-started) dan [Environment variables](/kilatkoding/environment-variables).
+
+<Tip>
+Kalau kamu masih ragu, pilih skenario yang paling sederhana dulu. KilatKoding lebih aman diperkecil lewat toggle daripada dipaksa mengaktifkan semua modul sejak awal.
+</Tip>

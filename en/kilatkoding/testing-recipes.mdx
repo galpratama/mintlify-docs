@@ -1,0 +1,140 @@
+---
+title: "Testing recipes"
+description: "Follow KilatKoding manual and automated testing recipes for auth, profile, payments, webhooks, admin, waitlist, contact, and AI."
+mode: "wide"
+---
+
+<Info>
+This page complements the main testing page. The difference is that this page focuses on “if I want to test a specific feature, what exact steps should I run?”
+</Info>
+
+## Automated commands
+
+| Command | When to use it |
+| --- | --- |
+| `npm run env:check` | Before debugging a feature that may not be ready |
+| `npm run lint` | Before commit or deployment |
+| `npm run typecheck` | After TypeScript or schema changes |
+| `npm test` | To verify route, provider, and helper logic |
+| `npm run e2e` | To smoke test the main public flows |
+
+## Manual recipes by area
+
+<AccordionGroup>
+  <Accordion title="Auth and dashboard">
+    Steps:
+
+    1. Open `/auth/sign-up` and create a new test account.
+    2. Verify that the default profile and subscription records also exist.
+    3. Log in through `/auth/login`.
+    4. Make sure `/dashboard` opens.
+    5. Test forgot password and update password.
+
+    Expected result:
+
+    - login succeeds,
+    - the dashboard renders,
+    - no strange redirect happens after the auth callback.
+  </Accordion>
+  <Accordion title="Profile and avatar">
+    Steps:
+
+    1. Log in with a test user.
+    2. Open `/dashboard/settings`.
+    3. Change the full name.
+    4. Upload a PNG avatar under 2 MB.
+    5. Save the profile.
+
+    Expected result:
+
+    - `POST /api/profile/avatar` succeeds,
+    - `POST /api/profile` succeeds,
+    - the new avatar appears in the UI,
+    - the old avatar no longer persists after refresh.
+  </Accordion>
+  <Accordion title="Waitlist and contact">
+    Steps:
+
+    1. Open `/waitlist` and submit a test email.
+    2. Submit the same email again to verify duplicate handling.
+    3. Open `/contact` and send a test message.
+
+    Expected result:
+
+    - waitlist insert succeeds,
+    - duplicates return a clear response,
+    - the contact form sends email or fails with an explainable message.
+  </Accordion>
+  <Accordion title="Billing and checkout">
+    Steps:
+
+    1. Log in with a test user.
+    2. Open `/dashboard/billing`.
+    3. Pick a plan.
+    4. run a Midtrans or Doku sandbox checkout.
+    5. Make sure the order page opens after the flow.
+
+    Expected result:
+
+    - a `payments` row is created with `PENDING`,
+    - the provider webhook arrives,
+    - the payment moves to the correct final state,
+    - the subscription becomes active if payment succeeds.
+  </Accordion>
+  <Accordion title="Midtrans or Doku webhook">
+    Steps:
+
+    1. Make sure the test order already exists.
+    2. Trigger the sandbox webhook from the provider.
+    3. Inspect `webhook_events`, `payments`, and `subscriptions`.
+    4. Check the admin dashboard.
+
+    Expected result:
+
+    - the event is recorded,
+    - duplicate delivery does not create duplicate side effects,
+    - the audit log also grows.
+  </Accordion>
+  <Accordion title="Admin dashboard">
+    Steps:
+
+    1. Make sure the test account has the `admin` role.
+    2. Open `/admin`.
+    3. Check metrics, payment history, webhook events, and audit trail.
+    4. Test a role change for another user.
+
+    Expected result:
+
+    - the admin panel opens,
+    - data renders,
+    - the role update succeeds and is written into the audit log.
+  </Accordion>
+  <Accordion title="AI routes">
+    Steps:
+
+    1. Log in with a test user on the right plan.
+    2. Call `POST /api/ai/generate` with a simple prompt.
+    3. Call `POST /api/ai/chat` from UI or a test client.
+    4. Verify the behavior when quota is nearly exhausted or rate limits are hit.
+
+    Expected result:
+
+    - valid requests return output,
+    - `ai_usage` increases,
+    - `429` and `503` responses are understandable when triggered.
+  </Accordion>
+</AccordionGroup>
+
+## Most time-efficient test order
+
+1. `npm run env:check`
+2. auth
+3. profile
+4. payments and webhooks if active
+5. admin if active
+6. AI if active
+7. `GET /api/health`
+
+<Tip>
+If Vercel is your main deployment target, read [Vercel deployment](/en/kilatkoding/vercel-deployment) after this page.
+</Tip>

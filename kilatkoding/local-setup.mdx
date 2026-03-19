@@ -7,7 +7,7 @@ description: "Ikuti langkah setup lokal KilatKoding untuk Windows, macOS, atau L
 
 Repo ini pernah diverifikasi dengan Node.js `24.4.1` dan npm `11.4.2`. Pada praktiknya, versi Node modern yang kompatibel dengan Next.js 16 biasanya cukup, tetapi angka itu adalah snapshot yang dipakai repo ini per 19 Maret 2026.
 
-Anda juga perlu:
+Kamu juga perlu:
 
 - Git
 - editor kode seperti VS Code
@@ -26,7 +26,7 @@ Anda juga perlu:
     winget install OpenJS.NodeJS.LTS
     ```
 
-    Setelah selesai, tutup lalu buka ulang terminal Anda. Pastikan kedua command ini berhasil:
+    Setelah selesai, tutup lalu buka ulang terminal kamu. Pastikan kedua command ini berhasil:
 
     ```powershell
     git --version
@@ -35,7 +35,7 @@ Anda juga perlu:
     ```
   </Accordion>
   <Accordion title="macOS">
-    Jika Anda memakai Homebrew:
+    Kalau kamu pakai Homebrew:
 
     ```bash
     brew install git node
@@ -50,7 +50,7 @@ Anda juga perlu:
     ```
   </Accordion>
   <Accordion title="Linux">
-    Contoh berikut memakai Ubuntu atau Debian. Jika distro Anda berbeda, gunakan package manager setara.
+    Contoh berikut memakai Ubuntu atau Debian. Kalau distro kamu berbeda, gunakan package manager setara.
 
     ```bash
     sudo apt update
@@ -71,10 +71,10 @@ Anda juga perlu:
 
 <Steps>
   <Step title="Ambil source code">
-    Jika Anda menerima akses repo, clone repo tersebut. Jika Anda menerima ZIP, ekstrak ke folder kerja Anda.
+    Kalau kamu menerima akses repo, clone repo tersebut. Kalau kamu menerima ZIP, ekstrak ke folder kerja kamu.
 
     ```bash
-    git clone <repo-url-anda>
+    git clone <url-repo>
     cd kilatkoding-src
     ```
   </Step>
@@ -121,7 +121,7 @@ Anda juga perlu:
   </Step>
 </Steps>
 
-## Kalau Anda juga ingin menjalankan E2E test
+## Kalau kamu juga ingin menjalankan E2E test
 
 Install browser Playwright sekali saja:
 
@@ -135,11 +135,11 @@ Lalu jalankan:
 npm run e2e
 ```
 
-## Tanda setup lokal Anda berhasil
+## Tanda setup lokal kamu berhasil
 
 | Yang dicek | Hasil yang diharapkan |
 | --- | --- |
-| `npm run env:check` | Tidak ada error fatal untuk fitur yang Anda aktifkan |
+| `npm run env:check` | Tidak ada error fatal untuk fitur yang kamu aktifkan |
 | `npm run dev` | Dev server hidup tanpa crash |
 | `http://localhost:3000` | Landing page tampil |
 | Login atau dashboard | Berjalan jika auth aktif dan Supabase sudah benar |

@@ -1,0 +1,125 @@
+---
+title: "Tanpa coding vs perlu developer"
+description: "Bedakan pekerjaan KilatKoding yang bisa kamu siapkan tanpa coding, yang sebaiknya dikerjakan bareng, dan yang memang perlu developer."
+mode: "wide"
+---
+
+<Info>
+Halaman ini ditulis supaya founder, operator, marketer, dan developer bisa membagi kerja dengan lebih realistis. Tujuannya bukan membatasi siapa boleh mengerjakan apa, tetapi mengurangi kebingungan dan rework.
+</Info>
+
+## Ringkasan cepat
+
+| Jenis pekerjaan | Biasanya bisa tanpa coding | Biasanya kolaboratif | Biasanya perlu developer |
+| --- | --- | --- | --- |
+| Menentukan fitur aktif | Ya | Ya | Tidak wajib |
+| Menyiapkan akun Supabase, Resend, Midtrans, Doku, OpenAI | Ya | Ya | Tidak wajib, tetapi developer tetap perlu validasi |
+| Mengubah copy, legal, pricing policy, CTA, dan positioning | Ya | Ya | Tidak wajib |
+| Mengisi `.env` production | Ya, kalau paham dashboard provider | Ya | Sering tetap butuh review developer |
+| Mengubah route, dashboard, database schema, webhook logic, atau AI UX | Tidak | Ya | Ya |
+| Men-debug incident runtime | Tidak | Ya | Ya |
+
+## Yang biasanya bisa kamu kerjakan tanpa coding
+
+Kamu biasanya bisa menangani area ini sendiri atau bersama AI assistant, selama tetap ada review akhir:
+
+- memilih modul yang ingin diaktifkan atau dimatikan,
+- membuat akun layanan pihak ketiga,
+- menyiapkan domain, sender email, redirect URL, dan webhook URL di dashboard provider,
+- menulis ulang copy landing page, FAQ, pricing copy, legal page, dan artikel blog,
+- menentukan struktur paket dan benefit plan dari sisi bisnis,
+- memutuskan apakah produk butuh waitlist, contact form, admin, payments, atau AI,
+- menjalankan checklist launch dari sisi operasional.
+
+## Yang biasanya paling efektif dikerjakan bareng developer
+
+Area ini sering bisa dipersiapkan non-tech, tetapi eksekusinya lebih aman kalau dikerjakan kolaboratif:
+
+- mengisi environment variables production,
+- menguji flow login, payment, webhook, avatar, dan AI,
+- memutuskan halaman mana yang dihapus dari navigasi,
+- mengganti preset desain marketing lalu menyesuaikan styling global,
+- meninjau data admin, audit log, dan health check sebelum launch,
+- memetakan use case produk ke kombinasi toggle dan layanan yang tepat.
+
+## Yang memang perlu developer
+
+Area berikut biasanya bukan pekerjaan non-coding:
+
+- menambah tabel baru, mengubah relasi database, atau menulis migration,
+- mengubah route handler, webhook verification, atau business logic billing,
+- menambahkan provider baru selain yang sudah ada,
+- mengubah auth flow, access control, atau permission model,
+- membangun UI dashboard baru yang belum tersedia,
+- menghubungkan AI route ke pengalaman produk yang nyata,
+- men-debug error build, error runtime, atau response API yang tidak sesuai.
+
+## Tugas berdasarkan peran
+
+<AccordionGroup>
+  <Accordion title="Kalau kamu founder atau operator produk">
+    Fokus paling efektif biasanya ada di:
+
+    - menentukan use case produk,
+    - memilih fitur yang aktif,
+    - menyiapkan akun provider,
+    - menulis positioning, pricing, FAQ, legal, dan konten marketing,
+    - memimpin checklist launch.
+
+    Developer tetap perlu masuk saat keputusanmu sudah menyentuh alur aplikasi, data, atau integrasi server-side.
+  </Accordion>
+  <Accordion title="Kalau kamu marketer atau content owner">
+    Area yang paling cocok:
+
+    - landing page copy,
+    - CTA dan headline,
+    - isi halaman `about`, `compare`, `roadmap`, `status`, dan `blog`,
+    - materi onboarding, email copy, dan FAQ,
+    - pengujian apakah narasi produk sudah konsisten.
+
+    Biasanya kamu tidak perlu menyentuh schema database, env server-only, atau route API.
+  </Accordion>
+  <Accordion title="Kalau kamu developer">
+    Area yang biasanya jadi tanggung jawabmu:
+
+    - local setup dan deployment,
+    - env validation,
+    - perubahan route, component, dan schema,
+    - billing dan webhook,
+    - AI integration,
+    - troubleshooting runtime dan observability.
+
+    Supaya kerja lebih cepat, gunakan keputusan bisnis yang sudah diputuskan non-tech sebagai constraint yang jelas, bukan asumsi.
+  </Accordion>
+  <Accordion title="Kalau kamu memakai AI coding assistant">
+    AI coding assistant paling berguna untuk:
+
+    - mengubah copy dan layout sederhana,
+    - menerapkan rebranding yang jelas,
+    - membuat perubahan UI yang bounded,
+    - membantu refactor kecil atau membaca codebase.
+
+    AI coding assistant tetap perlu arahan yang spesifik, validasi test, dan review manusia untuk area payment, auth, database, dan production deploy.
+  </Accordion>
+</AccordionGroup>
+
+## Tanda kamu sudah masuk area developer-only
+
+Pause dan libatkan developer kalau kamu sudah menyentuh salah satu hal ini:
+
+- perlu mengubah file di `app/api/`,
+- perlu mengubah migration di `supabase/migrations/`,
+- perlu menambah field baru ke dashboard atau database,
+- perlu menambah provider baru,
+- perlu memperbaiki incident yang sudah menyentuh billing, admin, webhook, atau AI runtime.
+
+## Cara membagi kerja yang paling aman
+
+1. Non-tech memutuskan use case, fitur aktif, pricing, copy, dan akun provider.
+2. Developer menerjemahkan keputusan itu ke env, route, UI, dan database.
+3. Keduanya menguji flow penting bersama sebelum launch.
+4. Incident production dibahas dengan bahasa operasional dulu, baru turun ke detail teknis.
+
+<Tip>
+Kalau kamu masih bingung harus mulai dari mana, baca [Use case KilatKoding](/kilatkoding/use-cases), lalu lanjutkan ke [Checklist launch per use case](/kilatkoding/launch-checklists).
+</Tip>

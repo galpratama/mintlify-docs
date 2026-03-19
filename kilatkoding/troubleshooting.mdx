@@ -17,7 +17,7 @@ dan cek:
 GET /api/health
 ```
 
-Dua pemeriksaan ini biasanya sudah cukup untuk menunjukkan apakah masalah Anda berasal dari env, feature toggle, atau konektivitas database.
+Dua pemeriksaan ini biasanya sudah cukup untuk menunjukkan apakah masalah kamu berasal dari env, feature toggle, atau konektivitas database.
 
 ## Masalah umum
 
@@ -25,7 +25,7 @@ Dua pemeriksaan ini biasanya sudah cukup untuk menunjukkan apakah masalah Anda b
   <Accordion title="Halaman auth atau dashboard tidak bekerja">
     Periksa `NEXT_PUBLIC_SUPABASE_URL` dan `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
 
-    Jika auth memang belum mau dipakai, set:
+    Kalau auth memang belum mau dipakai, set:
 
     ```env
     NEXT_PUBLIC_ENABLE_AUTH=false
@@ -52,7 +52,7 @@ Dua pemeriksaan ini biasanya sudah cukup untuk menunjukkan apakah masalah Anda b
     `503` biasanya berarti provider belum dikonfigurasi. `429` biasanya berarti usage limit atau rate limit tercapai.
   </Accordion>
   <Accordion title="Akses admin tidak muncul">
-    Pastikan user Anda ada di `user_roles` sebagai `admin`. `ADMIN_EMAILS` hanya membantu bootstrap awal.
+    Pastikan user kamu ada di `user_roles` sebagai `admin`. `ADMIN_EMAILS` hanya membantu bootstrap awal.
   </Accordion>
   <Accordion title="Playwright gagal saat pertama kali dijalankan">
     Install browser dulu:
@@ -84,17 +84,17 @@ Cek database langsung jika masalahnya menyangkut:
 - audit trail,
 - webhook event log.
 
-Biasanya tabel yang perlu Anda lihat adalah `user_roles`, `subscriptions`, `payments`, `audit_logs`, dan `webhook_events`.
+Biasanya tabel yang perlu kamu lihat adalah `user_roles`, `subscriptions`, `payments`, `audit_logs`, dan `webhook_events`.
 
 ## Kapan harus cek kode
 
 Masuk ke kode jika:
 
 - env sudah benar tetapi perilaku masih salah,
-- Anda baru mengubah file `config/*`,
-- Anda mengubah route handler atau komponen dashboard,
-- Anda menambah integrasi baru di atas pola yang sudah ada.
+- Kamu baru mengubah file `config/*`,
+- Kamu mengubah route handler atau komponen dashboard,
+- Kamu menambah integrasi baru di atas pola yang sudah ada.
 
 <Note>
-Kalau Anda sedang rebrand besar-besaran, masalah yang tampak seperti bug kadang hanya efek dari copy, navigasi, atau env toggle yang belum diselaraskan.
+Kalau kamu sedang rebrand besar-besaran, masalah yang tampak seperti bug kadang hanya efek dari copy, navigasi, atau env toggle yang belum diselaraskan.
 </Note>

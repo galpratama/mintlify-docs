@@ -1,0 +1,130 @@
+---
+title: "Checklist launch per use case"
+description: "Pakai checklist launch KilatKoding yang sesuai dengan use case produkmu, dari waitlist pre-launch sampai SaaS AI."
+mode: "wide"
+---
+
+<Info>
+Checklist di halaman ini dibuat untuk mengurangi blind spot sebelum launch. Pilih skenario yang paling dekat dengan produkmu, lalu cek satu per satu tanpa perlu menyalakan semua modul sekaligus.
+</Info>
+
+## Checklist universal
+
+Apa pun use case-nya, hampir selalu ada lima hal yang harus lolos:
+
+1. `npm run env:check` tidak menunjukkan fitur aktif sebagai `fallback mode`.
+2. `npm run build` berhasil.
+3. `GET /api/health` sesuai ekspektasi untuk fitur yang memang aktif.
+4. Navigasi publik tidak menampilkan halaman yang sengaja dimatikan.
+5. Copy, legal, dan konfigurasi domain sudah sesuai brand live.
+
+## Pilih checklist yang sesuai
+
+<AccordionGroup>
+  <Accordion title="Waitlist pre-launch atau validasi demand">
+    Checklist inti:
+
+    - `NEXT_PUBLIC_ENABLE_WAITLIST=true`
+    - `NEXT_PUBLIC_ENABLE_AUTH=false` kalau aplikasi penuh belum dibuka
+    - `NEXT_PUBLIC_SUPABASE_URL` dan `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` sudah benar
+    - migrasi tabel `waitlist` sudah terpasang
+    - halaman `/waitlist` tampil tanpa notice error
+    - `POST /api/waitlist` berhasil menyimpan email baru
+    - submit email yang sama memunculkan respons duplikat yang bisa dipahami
+    - contact form hanya dinyalakan kalau `RESEND_API_KEY` dan sender email sudah siap
+    - CTA, FAQ, dan janji produk di landing page sudah sinkron dengan funnel waitlist
+
+    Jangan lupa:
+
+    - hapus link ke dashboard, billing, atau area login kalau memang belum dipakai,
+    - review halaman `roadmap`, `status`, dan `open` supaya tidak terlihat seperti placeholder internal.
+  </Accordion>
+  <Accordion title="Subscription SaaS tanpa AI">
+    Checklist inti:
+
+    - `NEXT_PUBLIC_ENABLE_AUTH=true`
+    - `NEXT_PUBLIC_ENABLE_PAYMENTS=true`
+    - `NEXT_PUBLIC_ENABLE_ADMIN=true` kalau kamu butuh panel operasional
+    - Supabase public env dan `SUPABASE_SERVICE_ROLE_KEY` sudah benar
+    - `PAYMENT_PROVIDER` dipilih satu, lalu credential provider itu sudah lengkap
+    - redirect URL Supabase untuk login, verify email, dan reset password sudah memakai domain production
+    - webhook Midtrans atau Doku sudah mengarah ke domain production
+    - `/dashboard/billing` menampilkan plan yang benar
+    - satu sandbox payment berhasil membuat order dan mengaktifkan subscription
+    - cancel dan resume subscription berhasil di akun test
+    - admin dashboard bisa melihat payment, webhook events, dan audit log
+
+    Command yang sebaiknya lolos sebelum launch:
+
+    ```bash
+    npm run env:check
+    npm run lint
+    npm run typecheck
+    npm test
+    npm run build
+    ```
+  </Accordion>
+  <Accordion title="SaaS dengan fitur AI">
+    Checklist inti:
+
+    - semua checklist SaaS subscription dasar yang relevan sudah lolos,
+    - `NEXT_PUBLIC_ENABLE_AI=true`,
+    - `AI_DEFAULT_PROVIDER` dipilih sesuai provider utama,
+    - `OPENAI_API_KEY` atau `ANTHROPIC_API_KEY` sudah diisi,
+    - user test bisa memakai `POST /api/ai/chat` atau `POST /api/ai/generate`,
+    - plan token limit dan messaging produk sudah konsisten,
+    - flow `429` untuk limit usage dan rate limit sudah dipahami tim,
+    - flow `503` saat provider belum siap juga sudah dipahami tim support,
+    - admin atau operator tahu cara mengecek `ai_usage` saat ada komplain limit.
+
+    Jangan lupa:
+
+    - kalau AI adalah fitur premium, copy pricing dan benefit plan harus menyebut limit dengan jelas,
+    - kalau AI belum jadi fitur utama, lebih aman dimatikan dulu daripada dibiarkan setengah siap.
+  </Accordion>
+  <Accordion title="Portal member atau client area">
+    Checklist inti:
+
+    - `NEXT_PUBLIC_ENABLE_AUTH=true`
+    - payments hanya dinyalakan kalau akses memang dijual
+    - menu dashboard hanya menampilkan area yang relevan
+    - login, signup, reset password, dan update password berhasil
+    - `/dashboard/settings` bisa update nama dan avatar
+    - role user yang dibutuhkan sudah jelas, meski baru memakai `member` dan `admin`
+    - halaman marketing tidak menjanjikan flow billing kalau billing memang tidak aktif
+    - CTA publik mengarah ke login atau request access yang sesuai
+
+    Cocok dipakai kalau produkmu lebih fokus ke area login tertutup daripada checkout publik.
+  </Accordion>
+  <Accordion title="Agency handoff atau white-label delivery">
+    Checklist inti:
+
+    - nama produk, logo, dan deskripsi metadata sudah bukan KilatKoding lagi,
+    - legal page, blog contoh, status, roadmap, dan open startup sudah direview,
+    - sender email dan contact destination sudah milik klien,
+    - paket harga, CTA, testimonial, dan FAQ sudah disesuaikan,
+    - env production sudah terpisah per klien,
+    - domain, callback auth, dan webhook provider sudah memakai domain klien,
+    - handoff note ke klien sudah menjelaskan fitur yang aktif dan yang sengaja dimatikan.
+
+    Sebelum serah terima:
+
+    - jalankan satu smoke test di domain klien,
+    - pastikan navigasi tidak memunculkan halaman yang tidak dibeli atau tidak dipakai klien.
+  </Accordion>
+</AccordionGroup>
+
+## Sesudah launch
+
+Untuk 24 jam pertama, pantau minimal:
+
+- `GET /api/health`,
+- login dan signup,
+- satu alur utama produk,
+- payment dan webhook kalau payments aktif,
+- contact atau waitlist submission kalau form publik aktif,
+- admin panel kalau dipakai tim internal.
+
+<Tip>
+Kalau kamu perlu playbook incident sesudah launch, lanjutkan ke [Runbook operasional](/kilatkoding/operational-runbook).
+</Tip>

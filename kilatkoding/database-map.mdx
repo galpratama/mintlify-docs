@@ -1,0 +1,82 @@
+---
+title: "Peta database"
+description: "Lihat peta relasi database KilatKoding, tabel inti, siapa yang menulis data, dan area yang paling sering dikustomisasi."
+mode: "wide"
+---
+
+<Info>
+Halaman ini adalah “ERD ringan” untuk pembaca docs. Fokusnya bukan semua detail SQL, tetapi hubungan antar entitas dan kenapa tabel tertentu penting untuk produk.
+</Info>
+
+## Relasi inti
+
+```text
+auth.users
+├─ 1:1 profiles
+├─ 1:1 subscriptions
+├─ 1:1 user_roles
+├─ 1:N payments
+├─ 1:N ai_usage
+└─ storage.objects (avatars) via profiles.avatar_path
+
+subscriptions
+└─ 1:N payments
+
+payments
+└─ 1:N webhook_events (secara operasional lewat external_id + provider)
+```
+
+## Entitas identity dan access
+
+| Tabel atau area | Fungsi | Ditulis oleh | Dibaca oleh |
+| --- | --- | --- | --- |
+| `auth.users` | Akun auth Supabase | Supabase Auth | Seluruh flow login-aware |
+| `profiles` | Nama, avatar, metadata profile | trigger signup, `POST /api/profile` | dashboard settings, avatar UI |
+| `user_roles` | Role `member` atau `admin` | trigger signup, admin role update | `/admin`, guard admin |
+
+## Entitas billing dan payment
+
+| Tabel | Fungsi | Ditulis oleh | Dibaca oleh |
+| --- | --- | --- | --- |
+| `subscriptions` | Plan aktif, status, periode, cancel state | trigger signup, webhook, manage subscription | dashboard billing, AI plan lookup |
+| `payments` | Riwayat payment per order | `POST /api/payments`, webhook | dashboard billing, admin, order flow |
+| `webhook_events` | Ledger event webhook | webhook Midtrans dan Doku | admin dashboard, debugging operasional |
+
+## Entitas growth dan operasional
+
+| Tabel | Fungsi | Ditulis oleh | Dibaca oleh |
+| --- | --- | --- | --- |
+| `waitlist` | Lead pre-launch | `POST /api/waitlist` | operasional growth |
+| `ai_usage` | Pemakaian token AI per user | AI routes | AI limit check, analisis usage |
+| `rate_limit_buckets` | Rate limit persisten | rate-limit RPC | runtime rate limit |
+| `audit_logs` | Jejak aksi penting | admin, profile, payment flow | admin dashboard, investigasi |
+
+## Storage avatar
+
+| Area | Fungsi | Catatan |
+| --- | --- | --- |
+| bucket `avatars` | Menyimpan file avatar user | path `${userId}/avatar`, ukuran max 2 MB |
+| `profiles.avatar_path` | Menyimpan pointer object | dipakai untuk signed upload dan cleanup |
+| `profiles.avatar_url` | Menyimpan URL avatar yang dipakai UI | bisa berubah tergantung signed URL |
+
+## Tabel yang paling sering disentuh saat custom
+
+| Kalau kamu ingin mengubah | Tabel yang kemungkinan terlibat |
+| --- | --- |
+| role dan akses admin | `user_roles` |
+| katalog plan atau billing | `subscriptions`, `payments` |
+| avatar dan profile | `profiles`, storage `avatars` |
+| waitlist flow | `waitlist` |
+| fitur AI premium | `subscriptions`, `ai_usage` |
+| observability operasional | `webhook_events`, `audit_logs` |
+
+## Pertanyaan desain yang sebaiknya dijawab sebelum ubah schema
+
+1. Apakah perubahan ini menambah entitas baru, atau cukup menambah field di tabel lama?
+2. Apakah data ini milik user, milik subscription, atau milik organisasi yang belum ada saat ini?
+3. Apakah perubahan ini ikut memengaruhi admin dashboard, audit log, atau webhook flow?
+4. Apakah RLS dan access control tetap masuk akal setelah schema berubah?
+
+<Tip>
+Kalau kamu perlu melihat file migration dan konteks operasionalnya, balik ke [Database dan storage](/kilatkoding/database-and-storage).
+</Tip>

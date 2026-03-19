@@ -1,0 +1,116 @@
+---
+title: "Vercel deployment"
+description: "Deploy KilatKoding to Vercel with a clear env, auth callback, payment webhook, and post-launch validation checklist."
+mode: "wide"
+---
+
+## Why Vercel is the most natural path
+
+KilatKoding uses Next.js App Router without a custom server requirement. Because of that, Vercel is usually the fastest deployment path, especially if you want preview deployments, custom domains, and clean env management.
+
+## Before you begin
+
+Make sure these are already true:
+
+- the repo can build locally,
+- `npm run env:check` looks correct for the active features,
+- the production domain is already chosen,
+- provider accounts such as Supabase, Midtrans, Doku, Resend, and the AI provider are ready if used.
+
+## Deployment steps
+
+<Steps>
+  <Step title="Create a Vercel project">
+    Import the KilatKoding repo into Vercel. The default Next.js build command and output are usually detected automatically.
+  </Step>
+  <Step title="Fill environment variables">
+    Copy the relevant env values from `.env.local` or another secure source into Vercel. Focus only on the features that stay active.
+  </Step>
+  <Step title="Set NEXT_PUBLIC_APP_URL to the production domain">
+    Do not leave it as `http://localhost:3000`. This value is used for metadata, callbacks, and order URLs.
+  </Step>
+  <Step title="Run the first deployment">
+    Deploy and make sure the build succeeds.
+  </Step>
+  <Step title="Attach the production domain">
+    After the domain is active, redeploy if needed so the live URL is fully consistent.
+  </Step>
+</Steps>
+
+## Env groups that are usually needed
+
+| Group | Core env |
+| --- | --- |
+| Supabase | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `SUPABASE_SERVICE_ROLE_KEY` |
+| App URL | `NEXT_PUBLIC_APP_URL` |
+| Midtrans payments | `PAYMENT_PROVIDER=midtrans`, `MIDTRANS_SERVER_KEY`, `NEXT_PUBLIC_MIDTRANS_CLIENT_KEY` |
+| Doku payments | `PAYMENT_PROVIDER=doku`, `DOKU_CLIENT_ID`, `DOKU_SECRET_KEY` |
+| Email | `RESEND_API_KEY`, `EMAIL_FROM`, optional `CONTACT_EMAIL` |
+| Admin | `ADMIN_EMAILS` |
+| AI | `AI_DEFAULT_PROVIDER`, `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` |
+
+## After deployment, do not forget provider-side config
+
+<AccordionGroup>
+  <Accordion title="Supabase">
+    Add these production URLs in redirect configuration:
+
+    ```text
+    https://your-domain.com/auth/confirm
+    https://your-domain.com/auth/update-password
+    ```
+  </Accordion>
+  <Accordion title="Midtrans">
+    Register the production webhook:
+
+    ```text
+    https://your-domain.com/api/webhooks/midtrans
+    ```
+
+    Make sure the user return URL still points to your order page.
+  </Accordion>
+  <Accordion title="Doku">
+    Register the production webhook:
+
+    ```text
+    https://your-domain.com/api/webhooks/doku
+    ```
+  </Accordion>
+  <Accordion title="Resend">
+    Verify the sender domain and make sure `EMAIL_FROM` uses a verified domain.
+  </Accordion>
+</AccordionGroup>
+
+## Post-deploy validation
+
+At minimum, check:
+
+1. the homepage loads,
+2. login and signup work,
+3. `/dashboard` opens for a logged-in user,
+4. `/dashboard/billing` works if payments are active,
+5. `/admin` is reachable for admins if admin is active,
+6. `GET /api/health` matches expectations,
+7. one sandbox payment and one webhook test succeed if payments are active.
+
+## Most common gotchas
+
+| Problem | Usual cause |
+| --- | --- |
+| Auth callback fails | Supabase redirect URLs still point to the wrong domain |
+| Checkout completes but the subscription is not active | The provider webhook still points to the old domain or signature verification fails |
+| Contact form does not send | The Resend sender domain is not verified |
+| Health check is degraded | An active feature is still missing required env |
+| The order page still uses localhost | `NEXT_PUBLIC_APP_URL` was not updated |
+
+## Preview deployment vs production
+
+Preview deployments are great for UI review, but:
+
+- do not use a preview URL as the final auth callback,
+- do not use a preview URL as the final payment webhook target,
+- use previews for layout and copy review, not as permanent integration endpoints.
+
+<Tip>
+After deployment, continue to [Testing and deployment](/en/kilatkoding/testing-and-deployment) and [Testing recipes](/en/kilatkoding/testing-recipes) for fuller post-launch verification.
+</Tip>

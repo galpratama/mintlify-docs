@@ -9,32 +9,152 @@ Halaman ini adalah pintu masuk utama untuk dokumentasi KilatKoding. Isinya ditul
 
 ## Apa itu KilatKoding
 
-KilatKoding adalah boilerplate SaaS berbasis Next.js untuk pasar Indonesia. Anda tidak mulai dari halaman kosong. Anda mulai dari aplikasi yang sudah punya landing page, auth, dashboard, billing, admin, email, blog, AI, dan testing.
+KilatKoding adalah boilerplate SaaS berbasis Next.js untuk pasar Indonesia. Kamu tidak mulai dari halaman kosong. Kamu mulai dari aplikasi yang sudah punya landing page, auth, dashboard, billing, admin, email, blog, AI, dan testing.
 
 Dokumentasi ini merefleksikan isi repo `kilatkoding-src` per 19 Maret 2026.
 
-## Mulai dari halaman yang tepat
+## Pilih jalur baca sesuai tujuan
+
+Kalau kamu datang ke docs ini dengan kebutuhan yang berbeda, mulai dari jalur yang paling dekat dengan tujuan kamu.
+
+### Buat founder atau operator non-teknis
+
+1. [Ringkasan produk](/kilatkoding/product-overview)
+2. [Use case KilatKoding](/kilatkoding/use-cases)
+3. [Yang bisa dikerjakan tanpa coding vs butuh developer](/kilatkoding/no-code-vs-developer)
+4. [Checklist launch](/kilatkoding/launch-checklists)
+
+### Buat developer yang mau setup cepat
+
+1. [Mulai dengan benar](/kilatkoding/getting-started)
+2. [Setup lokal](/kilatkoding/local-setup)
+3. [Setup layanan](/kilatkoding/services-setup)
+4. [Environment variables](/kilatkoding/environment-variables)
+5. [Deploy ke Vercel](/kilatkoding/vercel-deployment)
+
+### Buat agency atau freelancer yang mau rebrand
+
+1. [Use case KilatKoding](/kilatkoding/use-cases)
+2. [Kustomisasi](/kilatkoding/customization)
+3. [Resep rebranding](/kilatkoding/rebranding-recipes)
+4. [Matrix feature toggle](/kilatkoding/feature-toggle-matrix)
+5. [Flow end-to-end](/kilatkoding/end-to-end-flows)
+
+### Buat audit teknis atau handover
+
+1. [Fitur dan route](/kilatkoding/features-and-routes)
+2. [Arsitektur](/kilatkoding/architecture)
+3. [API reference](/kilatkoding/api-reference)
+4. [Peta database](/kilatkoding/database-map)
+5. [Operational runbook](/kilatkoding/operational-runbook)
+
+## Mulai dari halaman inti
 
 <Columns cols={2}>
   <Card title="Pahami produk" href="/kilatkoding/product-overview">
     Lihat apa saja yang sudah tersedia, siapa yang cocok memakainya, dan fitur apa yang belum ada.
   </Card>
+  <Card title="Pilih use case" href="/kilatkoding/use-cases">
+    Cocokkan KilatKoding dengan skenario seperti SaaS berlangganan, portal client, waitlist pre-launch, atau produk AI.
+  </Card>
+  <Card title="Tentukan ownership" href="/kilatkoding/no-code-vs-developer">
+    Pahami area mana yang aman dikelola tanpa coding dan area mana yang tetap butuh developer.
+  </Card>
   <Card title="Rencanakan setup" href="/kilatkoding/getting-started">
-    Tentukan layanan yang ingin Anda aktifkan sebelum menyentuh file konfigurasi.
+    Tentukan layanan yang ingin kamu aktifkan sebelum menyentuh file konfigurasi.
   </Card>
   <Card title="Jalankan secara lokal" href="/kilatkoding/local-setup">
     Ikuti langkah setup untuk Windows, macOS, atau Linux.
   </Card>
-  <Card title="Ubah sesuai brand Anda" href="/kilatkoding/customization">
+  <Card title="Ubah sesuai brand kamu" href="/kilatkoding/customization">
     Ganti nama produk, navigasi, pricing, halaman, preset desain, email, dan konten.
+  </Card>
+</Columns>
+
+## Dokumentasi tambahan yang penting sebelum launch
+
+Halaman di bawah ini biasanya mulai dicari saat project sudah masuk tahap implementasi, QA, atau siap tayang.
+
+<Columns cols={2}>
+  <Card title="Checklist launch" href="/kilatkoding/launch-checklists">
+    Pakai checklist berbeda untuk waitlist, subscription SaaS, AI SaaS, atau portal client sebelum go-live.
+  </Card>
+  <Card title="Setup layanan" href="/kilatkoding/services-setup">
+    Sambungkan Supabase, Resend, Midtrans, Doku, dan layanan AI sesuai kombinasi yang kamu butuhkan.
+  </Card>
+  <Card title="Environment variables" href="/kilatkoding/environment-variables">
+    Cek env yang wajib, env yang opsional, dan kombinasi toggle yang aman dipakai.
+  </Card>
+  <Card title="Deploy ke Vercel" href="/kilatkoding/vercel-deployment">
+    Ikuti alur deploy production, isi env di Vercel, dan cek post-deploy sebelum launch.
+  </Card>
+  <Card title="Testing recipes" href="/kilatkoding/testing-recipes">
+    Jalankan skenario test manual untuk auth, payment, webhook, waitlist, dan fitur AI.
+  </Card>
+  <Card title="Operational runbook" href="/kilatkoding/operational-runbook">
+    Lihat apa yang harus dicek saat email gagal, webhook tidak masuk, atau subscription tidak aktif.
+  </Card>
+</Columns>
+
+## Dokumentasi untuk ubah produk tanpa menebak-nebak
+
+<Columns cols={2}>
+  <Card title="Resep rebranding" href="/kilatkoding/rebranding-recipes">
+    Ikuti tutorial berbasis tujuan seperti ganti nama produk, matikan AI, atau ubah landing page jadi agency site.
+  </Card>
+  <Card title="Matrix feature toggle" href="/kilatkoding/feature-toggle-matrix">
+    Lihat dampak setiap toggle ke UI, route, env, dan setup service sebelum kamu mematikan fitur.
+  </Card>
+  <Card title="Flow end-to-end" href="/kilatkoding/end-to-end-flows">
+    Pahami alur auth, checkout, webhook payment, upload avatar, dan usage AI dari sudut pandang produk.
+  </Card>
+  <Card title="Komponen dan UI" href="/kilatkoding/components-and-ui">
+    Lihat struktur komponen, pola layout, dan area visual yang paling sering diubah saat rebrand.
+  </Card>
+  <Card title="AI dan tooling" href="/kilatkoding/ai-and-tooling">
+    Cek area AI, provider yang dipakai, dan titik integrasi tooling yang perlu diperhatikan saat custom.
+  </Card>
+</Columns>
+
+## Reference teknis dan operasional
+
+Kalau kamu sedang audit kode, handover ke developer lain, atau butuh jawaban yang lebih teknis, buka halaman reference ini.
+
+<Columns cols={2}>
+  <Card title="Fitur dan route" href="/kilatkoding/features-and-routes">
+    Dapatkan peta halaman, route utama, dan modul yang sudah ada di boilerplate.
+  </Card>
+  <Card title="Arsitektur" href="/kilatkoding/architecture">
+    Lihat struktur folder, boundary antar layer, dan pola implementasi utama di aplikasi.
+  </Card>
+  <Card title="API reference" href="/kilatkoding/api-reference">
+    Cek endpoint penting, kebutuhan auth, bentuk request, response, dan error case umum.
+  </Card>
+  <Card title="Database dan storage" href="/kilatkoding/database-and-storage">
+    Pahami penggunaan Supabase untuk auth, data utama, avatar, dan file storage.
+  </Card>
+  <Card title="Peta database" href="/kilatkoding/database-map">
+    Pelajari tabel utama, relasi, dan area database yang paling sering disentuh saat custom.
+  </Card>
+  <Card title="Glosarium" href="/kilatkoding/glossary">
+    Buka istilah penting seperti webhook, service role, RLS, migration, dan rate limit dalam bahasa yang lebih ringan.
+  </Card>
+  <Card title="Batasan saat ini" href="/kilatkoding/limitations">
+    Cek area yang belum otomatis siap untuk semua use case agar ekspektasi kamu tetap realistis.
+  </Card>
+  <Card title="Testing dan deployment" href="/kilatkoding/testing-and-deployment">
+    Lihat gambaran workflow test, CI, dan release yang sudah tersedia di repo.
+  </Card>
+  <Card title="Troubleshooting" href="/kilatkoding/troubleshooting">
+    Cari solusi cepat untuk error setup, env yang salah, atau integrasi service yang belum jalan.
   </Card>
 </Columns>
 
 ## Untuk siapa dokumentasi ini
 
-- Anda seorang founder atau operator non-teknis yang ingin tahu apa yang sudah siap dipakai.
-- Anda seorang developer yang perlu menjalankan project dan memutuskan fitur mana yang aktif.
-- Anda seorang freelancer atau agency yang ingin me-rebrand boilerplate ini untuk klien.
+- Kamu seorang founder atau operator non-teknis yang ingin tahu apa yang sudah siap dipakai.
+- Kamu seorang developer yang perlu menjalankan project dan memutuskan fitur mana yang aktif.
+- Kamu seorang freelancer atau agency yang ingin me-rebrand boilerplate ini untuk klien.
 
 ## Yang sudah ada di dalam repo
 
@@ -48,15 +168,6 @@ Dokumentasi ini merefleksikan isi repo `kilatkoding-src` per 19 Maret 2026.
 - AI routes untuk chat dan generate, termasuk tracking penggunaan.
 - Testing dengan Vitest, Testing Library, Playwright, dan GitHub Actions CI.
 
-## Baca berurutan kalau Anda baru mulai
-
-1. [Ringkasan produk](/kilatkoding/product-overview)
-2. [Mulai dengan benar](/kilatkoding/getting-started)
-3. [Setup lokal](/kilatkoding/local-setup)
-4. [Setup layanan](/kilatkoding/services-setup)
-5. [Environment variables](/kilatkoding/environment-variables)
-6. [Kustomisasi](/kilatkoding/customization)
-
 <Tip>
-Kalau Anda hanya ingin audit cepat, baca [Fitur dan route](/kilatkoding/features-and-routes), [Arsitektur](/kilatkoding/architecture), dan [Testing dan deployment](/kilatkoding/testing-and-deployment).
+Kalau kamu baru pertama kali buka docs ini dan belum yakin mulai dari mana, baca [Ringkasan produk](/kilatkoding/product-overview), [Use case KilatKoding](/kilatkoding/use-cases), [Yang bisa dikerjakan tanpa coding vs butuh developer](/kilatkoding/no-code-vs-developer), lalu lanjut ke [Mulai dengan benar](/kilatkoding/getting-started).
 </Tip>

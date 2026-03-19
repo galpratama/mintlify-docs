@@ -1,0 +1,130 @@
+---
+title: "Launch checklists by use case"
+description: "Use the KilatKoding launch checklist that matches your product type, from a pre-launch waitlist to AI SaaS."
+mode: "wide"
+---
+
+<Info>
+These checklists are designed to reduce blind spots before launch. Pick the scenario that is closest to your product instead of enabling every module at once.
+</Info>
+
+## Universal checklist
+
+No matter which use case you choose, these five checks almost always matter:
+
+1. `npm run env:check` does not show active features as `fallback mode`.
+2. `npm run build` succeeds.
+3. `GET /api/health` matches expectations for the features that are truly active.
+4. Public navigation does not expose pages that were intentionally disabled.
+5. Copy, legal pages, and domain configuration match the live brand.
+
+## Pick the checklist that fits
+
+<AccordionGroup>
+  <Accordion title="Pre-launch waitlist or demand validation">
+    Core checklist:
+
+    - `NEXT_PUBLIC_ENABLE_WAITLIST=true`
+    - `NEXT_PUBLIC_ENABLE_AUTH=false` if the full app is not open yet
+    - `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` are correct
+    - the `waitlist` table migration is applied
+    - `/waitlist` renders without an error notice
+    - `POST /api/waitlist` successfully stores a new email
+    - submitting the same email again shows a clear duplicate response
+    - contact form is only enabled if `RESEND_API_KEY` and sender email are ready
+    - landing page CTA, FAQ, and product promise are aligned with the waitlist funnel
+
+    Do not forget:
+
+    - remove links to dashboard, billing, or login if they are not in use,
+    - review `roadmap`, `status`, and `open` so they do not look like internal placeholders.
+  </Accordion>
+  <Accordion title="Subscription SaaS without AI">
+    Core checklist:
+
+    - `NEXT_PUBLIC_ENABLE_AUTH=true`
+    - `NEXT_PUBLIC_ENABLE_PAYMENTS=true`
+    - `NEXT_PUBLIC_ENABLE_ADMIN=true` if you need an internal panel
+    - Supabase public env and `SUPABASE_SERVICE_ROLE_KEY` are correct
+    - `PAYMENT_PROVIDER` is set and that provider's credentials are complete
+    - Supabase redirect URLs use the production domain
+    - Midtrans or Doku webhooks point to the production domain
+    - `/dashboard/billing` shows the correct plans
+    - one sandbox payment successfully creates an order and activates the subscription
+    - cancel and resume both work in a test account
+    - the admin dashboard can see payments, webhook events, and audit logs
+
+    Commands that should pass before launch:
+
+    ```bash
+    npm run env:check
+    npm run lint
+    npm run typecheck
+    npm test
+    npm run build
+    ```
+  </Accordion>
+  <Accordion title="SaaS with AI features">
+    Core checklist:
+
+    - the relevant subscription SaaS checklist already passes,
+    - `NEXT_PUBLIC_ENABLE_AI=true`,
+    - `AI_DEFAULT_PROVIDER` matches the intended main provider,
+    - `OPENAI_API_KEY` or `ANTHROPIC_API_KEY` is set,
+    - a test user can use `POST /api/ai/chat` or `POST /api/ai/generate`,
+    - plan token limits and product messaging are aligned,
+    - the team understands `429` behavior for usage and rate limits,
+    - the team understands `503` behavior when a provider is not ready,
+    - operators know how to inspect `ai_usage` when a user complains about limits.
+
+    Do not forget:
+
+    - if AI is a premium feature, pricing and plan copy should explain limits clearly,
+    - if AI is not core yet, it is safer to keep it off than to ship it half-ready.
+  </Accordion>
+  <Accordion title="Member portal or client area">
+    Core checklist:
+
+    - `NEXT_PUBLIC_ENABLE_AUTH=true`
+    - payments stay on only if access is sold
+    - dashboard navigation only shows relevant sections
+    - login, signup, password reset, and password update all work
+    - `/dashboard/settings` can update name and avatar
+    - the role model is clear, even if it still only uses `member` and `admin`
+    - marketing pages do not promise public billing if billing is off
+    - public CTA points to login or access request in the right way
+
+    This is a strong fit when the product is more about a gated workspace than public checkout.
+  </Accordion>
+  <Accordion title="Agency handoff or white-label delivery">
+    Core checklist:
+
+    - product name, logo, and metadata no longer mention KilatKoding,
+    - legal page, sample blog posts, status, roadmap, and open startup data have been reviewed,
+    - sender email and contact inbox belong to the client,
+    - pricing, CTA, testimonials, and FAQ are client-specific,
+    - production env is separated per client,
+    - domain, auth callback, and payment webhooks use the client domain,
+    - handoff notes explain which features are active and which are intentionally off.
+
+    Before handoff:
+
+    - run one smoke test on the client domain,
+    - make sure navigation does not show pages the client did not buy or use.
+  </Accordion>
+</AccordionGroup>
+
+## After launch
+
+For the first 24 hours, monitor at least:
+
+- `GET /api/health`,
+- login and signup,
+- one main product flow,
+- payments and webhooks if payments are active,
+- contact or waitlist submissions if public forms are active,
+- the admin panel if the internal team uses it.
+
+<Tip>
+If you need incident playbooks after launch, continue to [Operational runbook](/en/kilatkoding/operational-runbook).
+</Tip>

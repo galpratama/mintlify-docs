@@ -1,0 +1,82 @@
+---
+title: "Database map"
+description: "See the KilatKoding database relationship map, the core tables, who writes the data, and which areas are most often customized."
+mode: "wide"
+---
+
+<Info>
+This page is a lightweight ERD for documentation readers. The goal is not to expose every SQL detail, but to show how the main entities relate and why certain tables matter to the product.
+</Info>
+
+## Core relationships
+
+```text
+auth.users
+├─ 1:1 profiles
+├─ 1:1 subscriptions
+├─ 1:1 user_roles
+├─ 1:N payments
+├─ 1:N ai_usage
+└─ storage.objects (avatars) via profiles.avatar_path
+
+subscriptions
+└─ 1:N payments
+
+payments
+└─ 1:N webhook_events (operationally via external_id + provider)
+```
+
+## Identity and access entities
+
+| Table or area | Purpose | Written by | Read by |
+| --- | --- | --- | --- |
+| `auth.users` | Supabase auth identity | Supabase Auth | Every login-aware flow |
+| `profiles` | Name, avatar, and profile metadata | signup trigger, `POST /api/profile` | dashboard settings, avatar UI |
+| `user_roles` | `member` or `admin` roles | signup trigger, admin role update | `/admin`, admin guards |
+
+## Billing and payment entities
+
+| Table | Purpose | Written by | Read by |
+| --- | --- | --- | --- |
+| `subscriptions` | Active plan, status, billing period, cancel state | signup trigger, webhook, subscription management | dashboard billing, AI plan lookup |
+| `payments` | Payment history per order | `POST /api/payments`, webhook | dashboard billing, admin, order flow |
+| `webhook_events` | Webhook event ledger | Midtrans and Doku webhooks | admin dashboard, operational debugging |
+
+## Growth and operations entities
+
+| Table | Purpose | Written by | Read by |
+| --- | --- | --- | --- |
+| `waitlist` | Pre-launch leads | `POST /api/waitlist` | growth operations |
+| `ai_usage` | Per-user AI token usage | AI routes | AI limit checks, usage analysis |
+| `rate_limit_buckets` | Persistent rate-limit storage | rate-limit RPC | runtime rate limiting |
+| `audit_logs` | Important operational history | admin, profile, and payment flows | admin dashboard, investigations |
+
+## Avatar storage
+
+| Area | Purpose | Notes |
+| --- | --- | --- |
+| `avatars` bucket | Store user avatar files | path `${userId}/avatar`, max size 2 MB |
+| `profiles.avatar_path` | Store the object pointer | used for signed upload and cleanup |
+| `profiles.avatar_url` | Store the avatar URL used in UI | may change depending on signed URL use |
+
+## Tables most often touched during customization
+
+| If you want to change | Tables likely involved |
+| --- | --- |
+| admin roles and access | `user_roles` |
+| plan catalog or billing behavior | `subscriptions`, `payments` |
+| avatar or profile experience | `profiles`, `avatars` storage |
+| waitlist flow | `waitlist` |
+| premium AI features | `subscriptions`, `ai_usage` |
+| operational visibility | `webhook_events`, `audit_logs` |
+
+## Design questions to answer before changing schema
+
+1. Does this change need a new entity, or only a new field in an existing table?
+2. Does the data belong to a user, a subscription, or an organization model that does not exist yet?
+3. Will this change also affect admin dashboards, audit logs, or webhook flows?
+4. Will RLS and access control still make sense after the schema change?
+
+<Tip>
+If you need the migration inventory and operational context behind these entities, go back to [Database and storage](/en/kilatkoding/database-and-storage).
+</Tip>

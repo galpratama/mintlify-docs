@@ -2,7 +2,7 @@
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
   "name": "BelajarKoding Docs",
-  "description": "Portal dokumentasi produk BelajarKoding. Saat ini tersedia dokumentasi lengkap untuk KilatKoding.",
+  "description": "Documentation portal for BelajarKoding products. KilatKoding docs are available in Indonesian and English.",
   "colors": {
     "primary": "#16A34A",
     "light": "#07C983",
@@ -13,58 +13,144 @@
     "eyebrows": "breadcrumbs"
   },
   "navigation": {
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Portal",
-          "href": "/",
-          "icon": "house"
-        }
-      ]
-    },
-    "products": [
+    "languages": [
       {
-        "product": "KilatKoding",
-        "icon": "bolt",
-        "description": "Boilerplate Next.js untuk developer Indonesia dengan auth, pembayaran, email, blog, AI, dan dashboard yang siap pakai.",
-        "groups": [
+        "language": "id",
+        "default": true,
+        "tabs": [
           {
-            "group": "Mulai di sini",
+            "tab": "Portal",
+            "icon": "house",
             "pages": [
-              "kilatkoding/index",
-              "kilatkoding/product-overview",
-              "kilatkoding/getting-started",
-              "kilatkoding/local-setup"
+              "index"
             ]
           },
           {
-            "group": "Setup dan integrasi",
+            "tab": "KilatKoding",
+            "icon": "bolt",
+            "groups": [
+              {
+                "group": "Mulai di sini",
+                "pages": [
+                  "kilatkoding/index",
+                  "kilatkoding/product-overview",
+                  "kilatkoding/use-cases",
+                  "kilatkoding/no-code-vs-developer",
+                  "kilatkoding/getting-started",
+                  "kilatkoding/launch-checklists",
+                  "kilatkoding/local-setup"
+                ]
+              },
+              {
+                "group": "Setup dan integrasi",
+                "pages": [
+                  "kilatkoding/services-setup",
+                  "kilatkoding/environment-variables",
+                  "kilatkoding/vercel-deployment"
+                ]
+              },
+              {
+                "group": "Fitur dan konfigurasi",
+                "pages": [
+                  "kilatkoding/features-and-routes",
+                  "kilatkoding/feature-toggle-matrix",
+                  "kilatkoding/end-to-end-flows",
+                  "kilatkoding/customization",
+                  "kilatkoding/rebranding-recipes",
+                  "kilatkoding/components-and-ui",
+                  "kilatkoding/ai-and-tooling"
+                ]
+              },
+              {
+                "group": "Teknis dan referensi",
+                "pages": [
+                  "kilatkoding/architecture",
+                  "kilatkoding/database-and-storage",
+                  "kilatkoding/database-map",
+                  "kilatkoding/api-reference",
+                  "kilatkoding/glossary",
+                  "kilatkoding/limitations"
+                ]
+              },
+              {
+                "group": "Operasional",
+                "pages": [
+                  "kilatkoding/testing-and-deployment",
+                  "kilatkoding/testing-recipes",
+                  "kilatkoding/operational-runbook",
+                  "kilatkoding/troubleshooting"
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "language": "en",
+        "tabs": [
+          {
+            "tab": "Portal",
+            "icon": "house",
             "pages": [
-              "kilatkoding/services-setup",
-              "kilatkoding/environment-variables"
+              "en/index"
             ]
           },
           {
-            "group": "Fitur dan konfigurasi",
-            "pages": [
-              "kilatkoding/features-and-routes",
-              "kilatkoding/customization",
-              "kilatkoding/components-and-ui",
-              "kilatkoding/ai-and-tooling"
-            ]
-          },
-          {
-            "group": "Teknis",
-            "pages": [
-              "kilatkoding/architecture",
-              "kilatkoding/database-and-storage"
-            ]
-          },
-          {
-            "group": "Operasional",
-            "pages": [
-              "kilatkoding/testing-and-deployment",
-              "kilatkoding/troubleshooting"
+            "tab": "KilatKoding",
+            "icon": "bolt",
+            "groups": [
+              {
+                "group": "Getting started",
+                "pages": [
+                  "en/kilatkoding/index",
+                  "en/kilatkoding/product-overview",
+                  "en/kilatkoding/use-cases",
+                  "en/kilatkoding/no-code-vs-developer",
+                  "en/kilatkoding/getting-started",
+                  "en/kilatkoding/launch-checklists",
+                  "en/kilatkoding/local-setup"
+                ]
+              },
+              {
+                "group": "Setup and integrations",
+                "pages": [
+                  "en/kilatkoding/services-setup",
+                  "en/kilatkoding/environment-variables",
+                  "en/kilatkoding/vercel-deployment"
+                ]
+              },
+              {
+                "group": "Features and configuration",
+                "pages": [
+                  "en/kilatkoding/features-and-routes",
+                  "en/kilatkoding/feature-toggle-matrix",
+                  "en/kilatkoding/end-to-end-flows",
+                  "en/kilatkoding/customization",
+                  "en/kilatkoding/rebranding-recipes",
+                  "en/kilatkoding/components-and-ui",
+                  "en/kilatkoding/ai-and-tooling"
+                ]
+              },
+              {
+                "group": "Technical reference",
+                "pages": [
+                  "en/kilatkoding/architecture",
+                  "en/kilatkoding/database-and-storage",
+                  "en/kilatkoding/database-map",
+                  "en/kilatkoding/api-reference",
+                  "en/kilatkoding/glossary",
+                  "en/kilatkoding/limitations"
+                ]
+              },
+              {
+                "group": "Operations",
+                "pages": [
+                  "en/kilatkoding/testing-and-deployment",
+                  "en/kilatkoding/testing-recipes",
+                  "en/kilatkoding/operational-runbook",
+                  "en/kilatkoding/troubleshooting"
+                ]
+              }
             ]
           }
         ]
@@ -73,20 +159,7 @@
   },
   "logo": {
     "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg",
-    "href": "/"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "Portal",
-        "href": "/"
-      }
-    ],
-    "primary": {
-      "type": "github",
-      "href": "https://github.com/galpratama/kilatkoding-src"
-    }
+    "dark": "/logo/dark.svg"
   },
   "contextual": {
     "options": [
@@ -95,10 +168,5 @@
       "chatgpt",
       "claude"
     ]
-  },
-  "footer": {
-    "socials": {
-      "github": "https://github.com/galpratama/kilatkoding-src"
-    }
   }
 }

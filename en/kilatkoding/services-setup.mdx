@@ -1,0 +1,153 @@
+---
+title: "Services setup"
+description: "Connect KilatKoding to Supabase, Resend, Midtrans, Doku, and an AI provider based on the features your product needs."
+mode: "wide"
+---
+
+## Core principle
+
+You do not need to enable every service on day one. KilatKoding supports a staged setup. If one feature is not ready yet, you can disable it through environment toggles.
+
+## Common service combinations
+
+| Product target | Minimum services | Services you can add later | Notes |
+| --- | --- | --- | --- |
+| Waitlist or pre-launch MVP | Supabase | Resend | Good when you only want to collect leads and validate demand first |
+| Subscription SaaS | Supabase + Midtrans or Doku | Resend, AI provider | This is the most natural KilatKoding setup path |
+| SaaS with AI features | Supabase + OpenAI or Anthropic | Midtrans or Doku, Resend | Add a payment provider if AI access will be monetized through plans |
+| Member portal or client portal | Supabase | Resend, payment provider | Billing can wait if access is not sold publicly yet |
+
+## 1. Supabase
+
+Supabase is the main foundation for auth and data storage. If you want login, dashboard, billing, admin, waitlist, avatar storage, or audit logs, start here.
+
+### Setup steps
+
+1. Create a new Supabase project.
+2. Copy `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` from **Project Settings** > **API**.
+3. Copy `SUPABASE_SERVICE_ROLE_KEY` for server-only features such as webhooks, admin reporting, signed avatar URLs, persistent rate limits, and audit logs.
+4. Run the database migrations:
+
+```bash
+npx supabase db push
+```
+
+5. Add these redirect URLs under **Authentication** > **URL Configuration**:
+
+```text
+http://localhost:3000/auth/confirm
+http://localhost:3000/auth/update-password
+```
+
+For production, replace the local domain with your live domain.
+
+### If you want Google OAuth
+
+1. Enable the Google provider in the Supabase dashboard.
+2. Add your Google Client ID and Secret.
+3. Add the Supabase callback URL to your Google Cloud OAuth app settings.
+
+## 2. Resend
+
+Use Resend if you want to send contact-form email or transactional email.
+
+### Required values
+
+- `RESEND_API_KEY`
+- `EMAIL_FROM`
+- `CONTACT_EMAIL` if the contact form should send to a different inbox than `EMAIL_FROM`
+
+### What the repo already includes
+
+- `emails/welcome.tsx`
+- `emails/invoice.tsx`
+- `lib/email.ts`
+- `POST /api/contact`
+
+## 3. Midtrans
+
+Use Midtrans if you want checkout through Snap.
+
+### Required values
+
+- `PAYMENT_PROVIDER=midtrans`
+- `MIDTRANS_SERVER_KEY`
+- `NEXT_PUBLIC_MIDTRANS_CLIENT_KEY`
+
+### Setup steps
+
+1. Use sandbox keys for development.
+2. Use production keys for your live environment.
+3. Register this webhook URL:
+
+```text
+https://your-domain.com/api/webhooks/midtrans
+```
+
+4. Make sure the user return URL points to your order page. KilatKoding uses `/order/[id]` and also includes a fallback at `/payment/callback`.
+
+## 4. Doku
+
+Use Doku if you want checkout through JOKUL.
+
+### Required values
+
+- `PAYMENT_PROVIDER=doku`
+- `DOKU_CLIENT_ID`
+- `DOKU_SECRET_KEY`
+
+### Setup steps
+
+1. Use sandbox credentials for development.
+2. Use production credentials for your live environment.
+3. Register this webhook URL:
+
+```text
+https://your-domain.com/api/webhooks/doku
+```
+
+## Midtrans vs Doku
+
+| Provider | Checkout style in the current repository | Main env | Usually a fit when |
+| --- | --- | --- | --- |
+| Midtrans | Snap token flow for Midtrans checkout | `MIDTRANS_SERVER_KEY`, `NEXT_PUBLIC_MIDTRANS_CLIENT_KEY` | You want the common Midtrans Snap flow used by many Indonesian digital products |
+| Doku | Server-generated JOKUL checkout URL | `DOKU_CLIENT_ID`, `DOKU_SECRET_KEY` | You prefer a redirect-style checkout flow that still completes through verified webhooks |
+
+## 5. AI provider
+
+AI is optional. If you do not need it, set `NEXT_PUBLIC_ENABLE_AI=false`.
+
+### Provider options
+
+- `AI_DEFAULT_PROVIDER=openai` with `OPENAI_API_KEY`
+- `AI_DEFAULT_PROVIDER=anthropic` with `ANTHROPIC_API_KEY`
+
+The current code maps the default models to:
+
+- OpenAI: `gpt-4o`
+- Anthropic: `claude-sonnet-4-20250514`
+
+That snapshot comes from the repository state as of March 19, 2026.
+
+## Which features depend on which services
+
+| Feature | Minimum services required |
+| --- | --- |
+| Login, signup, dashboard | Supabase public env |
+| Billing actions | Supabase public env + service role |
+| End-to-end payments | Supabase public env + service role + Midtrans or Doku |
+| Contact form | Resend |
+| Waitlist | Supabase public env |
+| Admin dashboard | Supabase public env + service role |
+| AI routes | Supabase public env + OpenAI or Anthropic |
+
+## Recommended integration order
+
+1. Supabase
+2. Resend
+3. Midtrans or Doku
+4. AI provider
+
+<Tip>
+If you want to launch quickly, enable Supabase and one payment provider first. Resend and AI can be added after the core flow is stable.
+</Tip>

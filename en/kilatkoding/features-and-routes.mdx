@@ -1,0 +1,117 @@
+---
+title: "Features and routes"
+description: "See every major KilatKoding area that is already included, including public pages, auth, dashboard, admin, and API routes."
+mode: "wide"
+---
+
+## Quick overview
+
+KilatKoding is divided into four main areas:
+
+- public marketing pages,
+- auth flows,
+- user and admin dashboards,
+- API routes for mutations and webhooks.
+
+## Public marketing pages
+
+| Route | Purpose |
+| --- | --- |
+| `/` | Main landing page |
+| `/about` | Product about page |
+| `/affiliates` | Affiliate or partner page |
+| `/blog` | MDX blog listing |
+| `/blog/[slug]` | Blog post detail |
+| `/changelog` | Product update history |
+| `/checkout` | Checkout page |
+| `/compare` | Comparison page |
+| `/contact` | Contact form |
+| `/docs/components` | Public UI component showcase |
+| `/open` | Open startup metrics page |
+| `/order/[id]` | Order page after checkout |
+| `/privacy` | Privacy policy |
+| `/roadmap` | Public roadmap |
+| `/status` | Status page |
+| `/terms` | Terms of service |
+| `/use-cases` | Use case gallery |
+| `/waitlist` | Waitlist page |
+
+## Auth routes
+
+| Route | Purpose |
+| --- | --- |
+| `/auth/login` | Login with password, Google, or Magic Link |
+| `/auth/sign-up` | Account registration |
+| `/auth/sign-up-success` | Post-signup confirmation |
+| `/auth/verify-email` | Email verification instructions |
+| `/auth/forgot-password` | Request password reset |
+| `/auth/update-password` | Set a new password |
+| `/auth/error` | Auth error page |
+| `/auth/confirm` | OTP or OAuth callback |
+
+## User and admin dashboards
+
+| Route | Access | Purpose |
+| --- | --- | --- |
+| `/dashboard` | Logged-in users | Account summary, subscription, and payments |
+| `/dashboard/settings` | Logged-in users | Profile, avatar, and password |
+| `/dashboard/billing` | Logged-in users | Choose a plan, upgrade, cancel, or resume |
+| `/dashboard/components` | Logged-in users | Dashboard and admin component showcase |
+| `/admin` | Admins only | Revenue, role management, webhook events, and audit trail |
+
+## API routes
+
+| Route | Method | Purpose |
+| --- | --- | --- |
+| `/api/payments` | `POST` | Create a payment session and store a pending payment record |
+| `/api/profile` | `POST` | Update the current user profile |
+| `/api/profile/avatar` | `POST` | Create a signed upload URL for avatar uploads |
+| `/api/subscription` | `POST` | Cancel or resume a subscription |
+| `/api/webhooks/midtrans` | `POST` | Verify and process Midtrans webhooks |
+| `/api/webhooks/doku` | `POST` | Verify and process Doku webhooks |
+| `/api/admin/users/role` | `POST` | Change a user role from the admin dashboard |
+| `/api/contact` | `POST` | Send a contact-form message |
+| `/api/waitlist` | `POST` | Save a waitlist signup |
+| `/api/ai/chat` | `POST` | Streaming AI chat |
+| `/api/ai/generate` | `POST` | One-shot text generation |
+| `/api/health` | `GET` | Health check for configuration and database access |
+
+## Features visible to end users
+
+From the end-user side, KilatKoding already supports:
+
+- registration and login,
+- profile management,
+- plan purchase flows,
+- subscription status visibility,
+- blog reading,
+- contact form submissions,
+- waitlist signups.
+
+## Features visible to internal teams
+
+From the admin or operator side, KilatKoding already supports:
+
+- revenue visibility,
+- active subscription counts and paid plan counts,
+- admin role management,
+- webhook event visibility,
+- audit trail visibility,
+- payment history review.
+
+## Route protection
+
+| Area | Protection mechanism |
+| --- | --- |
+| `/dashboard` and child routes | Checked through `proxy.ts` and Supabase auth claims |
+| `/admin` | Checked through auth plus the `admin` role from `user_roles` |
+| User mutation routes | Require a logged-in user |
+| Webhooks | Protected through provider signature verification |
+
+<Tip>
+If you disable a feature through an env toggle, also consider removing or adjusting its navigation entry so users do not see routes they cannot use.
+</Tip>
+
+<Note>
+If you need request and response details for each endpoint, continue to [API reference](/en/kilatkoding/api-reference). If you want to see the sequence from user action to database writes and webhooks, read [End-to-end flows](/en/kilatkoding/end-to-end-flows).
+</Note>

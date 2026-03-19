@@ -1,0 +1,153 @@
+---
+title: "End-to-end flows"
+description: "Follow the main KilatKoding end-to-end flows, from signup and checkout to webhooks, avatar uploads, waitlist submissions, and AI."
+mode: "wide"
+---
+
+<Info>
+This page explains how a single user action travels through pages, API routes, third-party services, and database tables. It is meant for developers, operators, and non-technical readers who want a clearer process view.
+</Info>
+
+## Main flow map
+
+| Flow | Starts from | Touches what |
+| --- | --- | --- |
+| Auth and basic onboarding | auth pages | Supabase Auth, `auth.users`, `profiles`, `subscriptions`, `user_roles` |
+| Checkout and subscription activation | dashboard billing | `POST /api/payments`, payment provider, webhook, `payments`, `subscriptions`, `webhook_events`, `audit_logs` |
+| Profile and avatar updates | dashboard settings | `POST /api/profile/avatar`, Supabase Storage, `POST /api/profile`, `profiles`, `audit_logs` |
+| Waitlist and contact | public pages | `POST /api/waitlist` or `POST /api/contact`, Supabase or Resend, rate limiting |
+| AI requests | product AI UI | `POST /api/ai/chat` or `POST /api/ai/generate`, AI provider, `ai_usage`, rate limiting |
+
+## Auth and basic onboarding flow
+
+<Steps>
+  <Step title="The user signs up or logs in">
+    The user enters through auth pages such as `/auth/login` or `/auth/sign-up`.
+  </Step>
+  <Step title="Supabase creates or verifies the session">
+    The session lives in the Supabase auth flow. Callbacks such as OTP and OAuth land in `/auth/confirm`.
+  </Step>
+  <Step title="Database triggers create the baseline user data">
+    When a new user appears in `auth.users`, migrations also prepare default rows in `profiles`, `subscriptions`, and `user_roles`.
+  </Step>
+  <Step title="Login-aware product areas read session claims">
+    Dashboard, billing, settings, and admin read auth claims to determine access.
+  </Step>
+</Steps>
+
+When this flow fails, the first places to check are usually:
+
+- Supabase public env,
+- redirect URLs,
+- the `/auth/confirm` callback,
+- admin access rules in `user_roles`.
+
+## Checkout to active subscription flow
+
+<Steps>
+  <Step title="The user chooses a plan in dashboard billing">
+    The UI reads the plan catalog from `config/subscriptions.ts`.
+  </Step>
+  <Step title="The client calls POST /api/payments">
+    The route validates the request, confirms the user is logged in, then creates a `payments` row with `PENDING` status.
+  </Step>
+  <Step title="The server creates a provider checkout session">
+    Midtrans returns a Snap token. Doku returns a checkout URL.
+  </Step>
+  <Step title="The user completes payment in the provider flow">
+    After that, the user usually returns to `/order/[id]` or the fallback `/payment/callback`.
+  </Step>
+  <Step title="The provider calls the webhook">
+    The Midtrans or Doku webhook verifies the signature, records the event in `webhook_events`, and updates the payment status.
+  </Step>
+  <Step title="The subscription becomes active">
+    If the payment becomes `PAID`, the webhook route activates or updates `subscriptions`. An audit log is also written.
+  </Step>
+</Steps>
+
+Tables involved:
+
+- `payments`
+- `subscriptions`
+- `webhook_events`
+- `audit_logs`
+
+## Profile and avatar flow
+
+<Steps>
+  <Step title="The user opens dashboard settings">
+    The settings page reads the existing profile, role, and avatar values.
+  </Step>
+  <Step title="The client requests a signed upload URL">
+    `POST /api/profile/avatar` receives `fileSize` and `fileType`, then returns an upload token if valid.
+  </Step>
+  <Step title="The browser uploads the file to the avatars bucket">
+    The file is stored at `${userId}/avatar` inside Supabase Storage.
+  </Step>
+  <Step title="The client saves the avatar reference back to the profile">
+    `POST /api/profile` updates `full_name`, `avatar_path`, and `avatar_url`.
+  </Step>
+  <Step title="The old avatar is cleaned up">
+    If the user replaced an avatar, the old object is cleaned up when possible. An audit log is also created.
+  </Step>
+</Steps>
+
+The most common failure reasons:
+
+- auth is not available,
+- `SUPABASE_SERVICE_ROLE_KEY` is not ready for the relevant writes,
+- file size is too large,
+- the MIME type is not supported.
+
+## Waitlist and contact flow
+
+<AccordionGroup>
+  <Accordion title="Waitlist">
+    The flow is:
+
+    - the user submits email in `/waitlist`,
+    - `POST /api/waitlist` passes through IP-based rate limiting,
+    - the payload is validated,
+    - the row is inserted into `waitlist`,
+    - duplicate email attempts return a response the UI can handle.
+  </Accordion>
+  <Accordion title="Contact form">
+    The flow is:
+
+    - the user submits name, email, and message in `/contact`,
+    - `POST /api/contact` passes through IP-based rate limiting,
+    - the payload is validated,
+    - the server sends email through Resend,
+    - the destination inbox is taken from `CONTACT_EMAIL` or falls back to `EMAIL_FROM`.
+  </Accordion>
+</AccordionGroup>
+
+## AI request flow
+
+<Steps>
+  <Step title="The client calls an AI route">
+    Your product UI calls `POST /api/ai/chat` or `POST /api/ai/generate`.
+  </Step>
+  <Step title="The server authorizes the request">
+    The route checks the provider, logged-in user, subscription plan, and monthly usage limit.
+  </Step>
+  <Step title="Rate limiting is applied">
+    Request limits per 5 minutes are adjusted based on the user's plan.
+  </Step>
+  <Step title="The request goes to the selected model">
+    The server chooses the model from the active provider and sends the request.
+  </Step>
+  <Step title="Usage is recorded">
+    When the response finishes, token usage is written into `ai_usage`.
+  </Step>
+</Steps>
+
+Important response meanings:
+
+- `401` usually means the user is not authenticated,
+- `429` can mean request rate limit or monthly usage limit,
+- `503` usually means the AI provider is not configured.
+
+<Tip>
+If you need a more contract-focused endpoint reference, continue to [API reference](/en/kilatkoding/api-reference).
+</Tip>

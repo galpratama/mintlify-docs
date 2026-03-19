@@ -1,0 +1,93 @@
+---
+title: "KilatKoding use cases"
+description: "Choose the KilatKoding scenario that fits best, from a pre-launch waitlist to an AI SaaS with subscriptions."
+mode: "wide"
+---
+
+<Info>
+This page maps KilatKoding to real product situations. The goal is not theory. It is to help you choose the right feature mix, service setup, and expected customization level for each scenario.
+</Info>
+
+## Quick chooser
+
+| Use case | Good fit when | Core features usually used | Minimum services | Important note |
+| --- | --- | --- | --- | --- |
+| Pre-launch waitlist | You want to validate demand before opening the full app | Waitlist, contact, blog, roadmap | Supabase, optionally Resend | Auth, payments, admin, and AI can stay off at first |
+| Subscription micro SaaS | You are selling software with user accounts and monthly billing | Auth, dashboard, payments, admin | Supabase + Midtrans or Doku | This is the most natural KilatKoding path |
+| Member portal or client portal | You need a gated area for members, students, or clients | Auth, dashboard, profile | Supabase | Payments and AI can truly stay optional |
+| SaaS with AI features | The main product value is chat, generation, or AI-assisted workflow | Auth, AI, usage tracking, plan limits | Supabase + OpenAI or Anthropic | Add a payment provider if AI access is sold through subscriptions |
+| Agency starter or white-label work | You repeatedly build similar products for different brands | Marketing pages, auth, dashboard, optional billing | Depends on the client | The value is speed and reusability across projects |
+| Marketplace or service platform | You want auth, payments, and admin as a starting foundation | Auth, payments, admin, webhooks | Supabase + payment provider | Multi-seller, payouts, and escrow still require major custom work |
+
+## Scenario details
+
+<AccordionGroup>
+  <Accordion title="Micro SaaS or subscription B2B SaaS">
+    - **Good for:** productivity tools, analytics dashboards, invoicing products, niche B2B SaaS, and paid internal tools.
+    - **Modules usually kept on:** auth, payments, admin. Contact and waitlist are optional. AI stays on only if it is part of the product value.
+    - **Minimum services:** Supabase plus one payment provider, either Midtrans or Doku.
+    - **Pages and routes that become useful immediately:** `/`, `/auth/login`, `/dashboard`, `/dashboard/billing`, `/order/[id]`, `POST /api/payments`, and the payment webhooks.
+    - **Custom work you will almost certainly do:** product domain models, onboarding, dashboard content, pricing copy, and access rules.
+    - **Read next:** [Getting started](/en/kilatkoding/getting-started), [Services setup](/en/kilatkoding/services-setup), and [Customization](/en/kilatkoding/customization).
+  </Accordion>
+  <Accordion title="Pre-launch waitlist or MVP validation">
+    - **Good for:** product ideas that are not ready for full access yet, pre-launch campaigns, or early demand validation.
+    - **Modules usually kept on:** waitlist, contact, blog, roadmap, status. Auth, payments, admin, and AI can all stay off at first.
+    - **Minimum services:** Supabase for waitlist storage. Resend is only needed if you enable the contact form.
+    - **Pages and routes that become useful immediately:** `/`, `/waitlist`, `/contact`, `/blog`, `/roadmap`, `/status`, and `POST /api/waitlist`.
+    - **Custom work usually needed:** product positioning, CTA structure, landing visuals, FAQ, and audience messaging.
+    - **Why this works well:** you can launch fast without finishing the entire application layer first.
+  </Accordion>
+  <Accordion title="Member portal, cohort portal, or client area">
+    - **Good for:** member areas, student dashboards, agency client portals, private knowledge hubs, or internal workspaces.
+    - **Modules usually kept on:** auth, dashboard, profile. Payments are optional if access is sold. Admin is optional if operators need an internal control panel.
+    - **Minimum services:** Supabase.
+    - **Pages and routes that become useful immediately:** `/auth/*`, `/dashboard`, `/dashboard/settings`, `POST /api/profile`, and `POST /api/profile/avatar`.
+    - **Custom work you will almost certainly do:** dashboard navigation, extra profile fields, domain-specific tables, and more specific permissions.
+    - **Read next:** [Components and UI](/en/kilatkoding/components-and-ui), [Architecture](/en/kilatkoding/architecture), and [Database and storage](/en/kilatkoding/database-and-storage).
+  </Accordion>
+  <Accordion title="SaaS where AI is a core part of the product">
+    - **Good for:** AI writing tools, internal assistants, content generators, workflow copilots, or premium model-based features.
+    - **Modules usually kept on:** auth, AI, admin. Payments stay on if AI access is monetized through subscriptions.
+    - **Minimum services:** Supabase plus OpenAI or Anthropic.
+    - **Pages and routes that become useful immediately:** `POST /api/ai/chat`, `POST /api/ai/generate`, billing pages, and the plan token limits in subscription config.
+    - **Custom work you will almost certainly do:** prompt design, chat or generation UI, business guardrails, output formatting, and model choice per workflow.
+    - **Important note:** KilatKoding already provides provider selection, usage tracking, and basic rate limiting, but the actual AI product experience still depends heavily on the product logic you build on top.
+  </Accordion>
+  <Accordion title="Agency starter or reusable white-label base">
+    - **Good for:** freelancers or agencies that repeatedly build landing pages, auth flows, dashboards, or subscription services.
+    - **Modules usually kept on:** marketing pages, auth, dashboard, contact. Payments and AI depend on each client.
+    - **Main value:** reusability. You do not need to repeat auth, email, payment, blog, and operations setup in every project.
+    - **Areas you usually change first:** `config/site.ts`, `config/navigation.ts`, `config/subscriptions.ts`, marketing sections, legal pages, and marketing design presets.
+    - **Custom work you will almost certainly do:** new branding, new copy, client-specific data models, and sometimes a different onboarding flow.
+    - **Read next:** [Customization](/en/kilatkoding/customization), [Components and UI](/en/kilatkoding/components-and-ui), and [Testing and deployment](/en/kilatkoding/testing-and-deployment).
+  </Accordion>
+  <Accordion title="Marketplace or more complex service platform">
+    - **Good for:** projects that still want to reuse auth, local payments, admin visibility, and the marketing site as a starting foundation.
+    - **What already helps:** base auth, Indonesian payment gateways, webhook verification, admin visibility, audit trail, and initial API routes.
+    - **What is not a ready-made feature:** multi-seller flow, split payouts, escrow, vendor settlement, team workspace, and more complex marketplace rules.
+    - **What this means:** KilatKoding can save time on the foundation, but the database schema, operational logic, and core product behavior will still need a large custom layer.
+    - **Advice:** choose this path only if your team specifically wants to save time on the marketing, auth, billing, and admin layers, not because you expect the marketplace logic to be finished out of the box.
+  </Accordion>
+</AccordionGroup>
+
+## When KilatKoding is not the ideal fit yet
+
+Consider another foundation, or at least expect a larger custom layer, when:
+
+- team or multi-tenant support is a core requirement from day one,
+- usage-based billing must already be mature in the first launch,
+- the product is closer to physical e-commerce with inventory, shipping, and large catalog logic,
+- a mobile-first application is the main deliverable rather than a web app first.
+
+## How to choose the safest scenario
+
+1. Start from the most important user flow. Do users need to log in, pay, or only join a waitlist first?
+2. Decide whether payments are part of the first launch or can wait.
+3. Decide whether AI is core, an add-on, or not needed at all.
+4. Turn off unused modules through `NEXT_PUBLIC_ENABLE_*` instead of leaving them enabled without config.
+5. Validate the decision through [Getting started](/en/kilatkoding/getting-started) and [Environment variables](/en/kilatkoding/environment-variables).
+
+<Tip>
+If you are still unsure, choose the simplest path first. KilatKoding is safer when you scale features up gradually than when you force every module on at the start.
+</Tip>

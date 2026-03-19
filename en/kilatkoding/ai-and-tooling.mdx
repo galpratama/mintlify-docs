@@ -1,0 +1,95 @@
+---
+title: "AI and tooling"
+description: "Understand KilatKoding's runtime AI features and the repository files that make it friendly to AI coding assistants."
+mode: "wide"
+---
+
+## The two AI layers in KilatKoding
+
+KilatKoding includes two different AI layers:
+
+- AI features for your product,
+- AI coding assistant configuration for your development workflow.
+
+## AI features for your product
+
+### Available routes
+
+| Route | Purpose |
+| --- | --- |
+| `/api/ai/chat` | Streaming chat |
+| `/api/ai/generate` | One-shot text generation |
+
+### Core files
+
+| File | Purpose |
+| --- | --- |
+| `lib/ai/provider.ts` | Selects the provider and model |
+| `lib/ai/middleware.ts` | Handles auth check, provider check, and usage limits |
+| `lib/ai/usage.ts` | Tracks token usage and plan limits |
+| `hooks/use-ai-chat.ts` | Client hook for chat UI |
+
+### Supported providers
+
+| Provider | Required env | Default model as of March 19, 2026 |
+| --- | --- | --- |
+| OpenAI | `OPENAI_API_KEY` | `gpt-4o` |
+| Anthropic | `ANTHROPIC_API_KEY` | `claude-sonnet-4-20250514` |
+
+### Token limits by plan
+
+| Plan | Monthly token limit |
+| --- | --- |
+| `FREE` | `0` |
+| `BASIC` | `10_000` |
+| `PRO` | `100_000` |
+| `ULTIMATE` | Unlimited |
+
+### AI request rate limits
+
+| Plan | Request limit |
+| --- | --- |
+| `FREE` | 10 requests per 5 minutes |
+| `BASIC` | 20 requests per 5 minutes |
+| `PRO` | 40 requests per 5 minutes |
+| `ULTIMATE` | 80 requests per 5 minutes |
+
+## How to disable AI
+
+If your product does not need AI yet:
+
+```env
+NEXT_PUBLIC_ENABLE_AI=false
+```
+
+This keeps the repository simpler to operate without deleting the AI files or routes.
+
+## AI tooling for developers
+
+The repository also includes context files for several AI coding tools:
+
+| File | Tool |
+| --- | --- |
+| `AGENTS.md` | General agent guidance and repository workflow |
+| `CLAUDE.md` | Claude Code |
+| `.github/copilot-instructions.md` | GitHub Copilot |
+| `.cursorrules` | Cursor |
+| `.windsurfrules` | Windsurf |
+
+These files exist to provide accurate context about the stack, structure, and working rules, so AI output is more relevant and less likely to suggest the wrong patterns.
+
+## When you should touch this area
+
+- you want to enable AI features for end users,
+- you want to change the default provider,
+- you want to adjust token limits by plan,
+- you want to update the instructions used by your team’s AI coding assistants.
+
+## When you can ignore this area
+
+- you do not need AI features in the product yet,
+- you are only changing branding, content, or marketing pages.
+
+<Tip>
+If you are focused on shipping the MVP quickly, AI can stay disabled at first. KilatKoding is still valuable even without turning the AI layer on.
+</Tip>
